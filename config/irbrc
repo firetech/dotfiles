@@ -1,0 +1,51 @@
+# IRB improvements: Command history, coloring, more shell like commands cd, pwd, dir, cat
+# Use powerful shell commands
+# dir
+# dir '**/*.rb'
+# cd 'app'
+# pwd
+# cat 'config/environment.rb'
+# dir('vendor/plugins/*').each do |d| inside_dir(d) {`git pull`} end
+# Developed by umur dot ozkul at gmail dot com
+
+require 'pp'
+require 'irb/completion'
+IRB.conf[:PROMPT_MODE] = :SIMPLE
+require 'rubygems'
+require 'wirble'
+Wirble.init
+
+Wirble::Colorize.colors.merge!({
+      # delimiter colors
+      :comma              => :light_blue,
+      :refers             => :light_blue,
+
+      # container colors (hash and array)
+      :open_hash          => :light_green,
+      :close_hash         => :light_green,
+      :open_array         => :light_green,
+      :close_array        => :light_green,
+
+      # object colors
+      :open_object        => :light_red,
+      :object_class       => :white,
+      :object_addr_prefix => :light_blue,
+      :object_line_prefix => :light_blue,
+      :close_object       => :light_red,
+
+      # symbol colors
+      :symbol             => :yellow,
+      :symbol_prefix      => :yellow,
+
+      # string colors
+      :open_string        => :light_red,
+      :string             => :light_purple,
+      :close_string       => :light_red,
+
+      # misc colors
+      :number             => :light_purple,
+      :keyword            => :light_purple,
+      :class              => :light_green,
+      :range              => :light_red,
+})
+Wirble.colorize

@@ -1,0 +1,160 @@
+#
+# ZSH config by Joakim Andersson
+#
+# Adapted from different sources on the Interblag.
+# Mutated heavily over the years.
+#
+
+[[ $UID == $GID ]] && umask 002 || umask 022
+
+bindkey -M emacs "\033[3~" delete-char
+bindkey -M emacs "\033OH" beginning-of-line
+bindkey -M emacs "\033OF" end-of-line
+bindkey -M vicmd "\033[3~" vi-delete-char
+bindkey -M vicmd "\033OH" vi-beginning-of-line
+bindkey -M vicmd "\033OF" vi-end-of-line
+
+autoload run-help
+
+alias ls="ls -F"
+alias d='ls'
+alias dl='ls -la'
+alias l='ls'
+alias ll='ls -l'
+alias la='ls -la'
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# enable color support of ls and grep
+if [ "$TERM" != "dumb" ]; then
+    ls_bin="ls"
+    grep_bin="grep"
+    if [ -x =dircolors ]; then
+        # Support for systems where GNU ls is placed elsewhere
+        if [ -x =dirname ]; then
+            better_ls_bin="$(dirname =dircolors)/ls"
+            if [ -x "$better_ls_bin" ]; then
+                ls_bin="$better_ls_bin"
+            fi
+        fi
+
+        eval "$(dircolors -b ~/.dircolors)"
+
+    # Fallback to default BSD names
+    elif [ -x =gdircolors -a -x =gls]; then
+        eval "$(gdircolors -b ~/.dircolors)"
+        ls_bin="gls"
+        [ -x =ggrep ] && grep_bin="ggrep"
+    fi
+    
+    # Test if ls supports --color=auto
+    if [ "$($ls_bin --color=auto >/dev/null 2>&1 ; echo $?)" = "0" ]; then
+        alias ls="$ls_bin -F --color=auto"
+    else
+        alias ls="$ls_bin -F"
+    fi
+
+    # Test if grep supports --color=auto
+    if [ "$(echo a | $grep_bin --color=auto a >/dev/null 2>&1 ; echo $?)" = "0" ]; then
+        alias grep="$grep_bin --color=auto"
+    else
+        alias grep="$grep_bin -F"
+    fi
+
+    unset ls_bin better_ls_bin grep_bin
+fi
+
+case $TERM in
+    (xterm*|rxvt)
+#        preexec () { print -Pn "\e]0;%n@%m: $*\a" }
+        precmd () { print -Pn "\e]0;%n@%m: %~\a" }
+        ;;
+    (screen)
+        preexec () { echo -ne "\ek${1[(wr)^(*=*|sudo|-*)]}\e\\" }
+        precmd () { echo -ne "\ekzsh\e\\" }
+        ;;
+esac
+
+bindkey '\e[1~' beginning-of-line
+bindkey '\e[4~' end-of-line
+case $TERM in (xterm*)
+    bindkey '\e[H' beginning-of-line
+    bindkey '\e[F' end-of-line ;;
+esac
+
+zstyle ':completion:*' completer _expand _complete _correct _approximate
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle :compinstall filename '~/.zshrc'
+
+autoload -Uz compinit
+$(print -Pn "compinit -d $HOME/.zcompdump.%m")
+
+setopt autolist                # List alternatives on tab completion
+setopt autoremoveslash         # Remove '/' from completion
+setopt braceccl                # Allow expressions like {a-zA-Z}
+setopt correct                 # Try to correct spelling of commands
+setopt extendedglob            # Use zsh extended globbing
+setopt hashdirs                # Hash whole dir on exec
+setopt hashlistall             # Hash all on first completion
+setopt histignoredups          # No duplicates in history
+setopt histreduceblanks        # history retty printer
+setopt listtypes               # Incl type in completion alternatives
+setopt longlistjobs            # List jobs in long format
+setopt nonomatch               # No errors for unmatched patterns
+setopt pushdignoredups         # No dublicates on pushd dirstack
+setopt completeinword          # copletion in the middle of word
+setopt listpacked              # variable col width for alternatives
+setopt noclobber               # Don't overwrite files with >
+
+if [ "$TERM" != "dumb" ]; then
+    fg_green=$'\033[01;32m'
+    fg_red=$'\033[01;31m'
+    fg_blue=$'\033[01;34m'
+    fg_none=$'\033[00m'
+fi
+
+typeset -A prc
+prc[promptchar]="%{%(?.$fg_green.$fg_red)%}%#%{$fg_none%}"
+prc[userspec]="%{%(!.$fg_red.$fg_green)%}$USER@%m%{$fg_none%}"
+export PROMPT="${prc[userspec]}:%{$fg_blue%}%~/${prc[promptchar]} "
+
+[ -x =git -a -f ~/.zshrc.git ] && source ~/.zshrc.git
+
+if [ -x =apt-get ]; then
+    # System management :)
+    alias ats='echo Searching... ; aptitude search'
+    alias atv='aptitude show'
+    alias acs='apt-cache search'
+    alias acv='apt-cache show'
+    alias acp='apt-cache policy'
+
+    alias agu='sudo apt-get update'
+    alias agug='sudo apt-get upgrade'
+    alias agugd='sudo apt-get dist-upgrade'
+    alias au='sudo apt-get update && sudo apt-get dist-upgrade'
+    alias agi='sudo apt-get install'
+    alias agir='sudo apt-get install --reinstall'
+    alias agr='sudo apt-get remove'
+    alias agrp='sudo apt-get remove --purge'
+    alias agra='sudo apt-get autoremove'
+    alias agrap='sudo apt-get autoremove --purge'
+
+    alias di='sudo dpkg -i'
+    alias drc='sudo dpkg-reconfigure'
+    alias dlf='dpkg -L'
+    alias agc='sudo apt-get autoclean'
+    alias agtc='sudo apt-get clean'
+fi
+
+if [ -f /var/log/syslog ]; then
+    sudo='sudo '
+    [ -r /var/log/syslog ] && sudo=''
+    alias syslog="${sudo}tail -F /var/log/syslog"
+    unset sudo
+fi
+
+# Local overrides/additions
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
+unset prc
