@@ -1,7 +1,7 @@
 Dotfiles
 ========
 
-My configuration files for ZSH, vim etc.
+My configuration files for ZSH, vim etc. The files are best suited for Debian and derived Linux distros, but at least the ZSH config is quite adaptive.
 
 Installation
 ============
