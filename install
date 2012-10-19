@@ -1,0 +1,67 @@
+#!/bin/zsh
+
+target="$HOME"
+source="${0:A:h}/config"
+backup="${0:A:h}/backup/$(date +%Y%m%d_%H%M%S)"
+
+abs_source=$source
+source="${source/$target\//}"
+[ "$source" != "$abs_source" ] && source_note=" (relative to target)"
+
+echo "Dotfiles installation"
+echo "====================="
+echo
+echo "Target directory: $target"
+echo "Source directory: $source$source_note"
+echo
+echo "Backup directory: $backup"
+echo "(Conflicting files and directories will be moved here)"
+echo
+
+if [ ! -O $abs_source ]; then
+	echo "/!\\ $abs_source is not owned by $(id -un)."
+	echo "    You need your own clone of the git repository!"
+	exit 1
+fi
+
+echo -n "Continue? [y/N] "
+
+read ans
+
+if [ "${ans:l}" != "y" ]; then
+	echo "Abort."
+	exit 1
+fi
+
+check_status() {
+	if [ "$?" != "0" ]; then
+		echo "Failed!"
+		exit 1
+	elif [ "$0" != "-q" ]; then
+		echo "Done."
+	fi
+}
+
+
+cd $abs_source
+for file in *; do
+	echo
+	echo "* .$file"
+	source_file="$source/$file"
+	target_file="$target/.$file"
+	if [ -e "$target_file" ]; then
+		backup_file="$backup/$file"
+		echo "  /!\\ $target_file exists!"
+		echo -n "      Moving to $backup_file... "
+		mkdir -p $backup
+		check_status -q
+		mv $target_file $backup_file
+		check_status
+	fi
+	echo -n "  - Symlinking $target_file -> $source_file... "
+	ln -s $source_file $target_file
+	check_status
+done
+
+echo
+echo "Finished."
