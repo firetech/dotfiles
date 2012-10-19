@@ -37,7 +37,7 @@ check_status() {
 	if [ "$?" != "0" ]; then
 		echo "Failed!"
 		exit 1
-	elif [ "$0" != "-q" ]; then
+	elif [ "$1" != "-q" ]; then
 		echo "Done."
 	fi
 }
