@@ -56,6 +56,13 @@ git_prompt_parse() {
 		while test "${git_pwd:A}" != "${__ZSH_GIT_FULL_DIR}"; do
 			__ZSH_GIT_REPO_PATH="/${git_pwd:t}${__ZSH_GIT_REPO_PATH}"
 			git_pwd="${git_pwd:h}"
+			if test "$git_pwd" = "/"; then
+				# Failed to find root.
+				# Reset variables and avoid an infinite loop.
+				git_pwd="${__ZSH_GIT_FULL_DIR}"
+				__ZSH_GIT_REPO_PATH="${PWD##${__ZSH_GIT_FULL_DIR}}"
+				break
+			fi
 		done
 		__ZSH_GIT_REPO="${git_pwd}"
 	fi
