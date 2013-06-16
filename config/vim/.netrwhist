@@ -1,9 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =7
-let g:netrw_dirhist_1='/root'
-let g:netrw_dirhist_2='/root/assorted_passwords'
-let g:netrw_dirhist_3='/root/bin'
-let g:netrw_dirhist_4='/home/joakiman/dev/cameras/tickets/32570/packages-web-view-platoon'
-let g:netrw_dirhist_5='/home/joakiman/dev/cameras/p1564-le_fw/packages/web/view/platoon'
-let g:netrw_dirhist_6='/home/joakiman/dev/cameras/p1564-le_fw/unpacked/packages/web/config/html_admin/platoon/layout-rel/1.8.0/nvp/4'
-let g:netrw_dirhist_7='/etc/udev/rules.d'
