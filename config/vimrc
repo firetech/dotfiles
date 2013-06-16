@@ -2,5 +2,5 @@ set background=dark ignorecase smartcase tabstop=4 smartindent backspace=2 ruler
 syntax on
 
 "Add w!! to write with sudo privileges
-command SudoWrite %!op proot tee > /dev/null %
+command SudoWrite %!sudo tee > /dev/null %
 cabbrev w!! <c-r>=(getcmdpos()==1 && getcmdtype()==':' ? 'SudoWrite' : 'w!!')<CR>
