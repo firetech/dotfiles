@@ -1,6 +1,14 @@
+" Basic settings
 set background=dark ignorecase smartcase tabstop=4 smartindent backspace=2 ruler shiftwidth=4
 syntax on
 
-"Add w!! to write with sudo privileges
+" Highlight trailing whitespace and space before tab
+highlight ExtraWhitespace ctermbg=darkred guibg=darkred
+match ExtraWhitespace /\(\s\+$\| \+\ze\t\)/
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=darkred guibg=darkred
+autocmd InsertEnter * match ExtraWhitespace /\(\s\+\%#\@<!$\| \+\ze\t\)/
+autocmd InsertLeave * match ExtraWhitespace /\(\s\+$\| \+\ze\t\)/
+
+" Add w!! to write with sudo privileges
 command SudoWrite %!sudo tee > /dev/null %
 cabbrev w!! <c-r>=(getcmdpos()==1 && getcmdtype()==':' ? 'SudoWrite' : 'w!!')<CR>
