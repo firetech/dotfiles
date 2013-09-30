@@ -4,10 +4,27 @@ syntax on
 
 " Highlight trailing whitespace and space before tab
 highlight ExtraWhitespace ctermbg=darkred guibg=darkred
-match ExtraWhitespace /\(\s\+$\| \+\ze\t\)/
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=darkred guibg=darkred
+autocmd BufWinEnter * match ExtraWhitespace /\(\s\+$\| \+\ze\t\)/
 autocmd InsertEnter * match ExtraWhitespace /\(\s\+\%#\@<!$\| \+\ze\t\)/
 autocmd InsertLeave * match ExtraWhitespace /\(\s\+$\| \+\ze\t\)/
+if version >= 702
+  autocmd BufWinLeave * call clearmatches()
+endif
+
+" Add command to fix trailing whitespace
+function! <SID>StripTrailingWhitespace()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+command StripTWS call <SID>StripTrailingWhitespace()
 
 " Add w!! to write with sudo privileges
 command SudoWrite %!sudo tee > /dev/null %
