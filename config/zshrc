@@ -5,28 +5,40 @@
 # Mutated heavily over the years.
 #
 
-[[ $UID == $GID ]] && umask 002 || umask 022
+# Preserve history
+HISTSIZE=500
+HISTFILE=~/.zsh_history
+SAVEHIST=500
 
+
+# Make Home, End and Delete work as expected
 bindkey -M emacs "\033[3~" delete-char
 bindkey -M emacs "\033OH" beginning-of-line
 bindkey -M emacs "\033OF" end-of-line
 bindkey -M vicmd "\033[3~" vi-delete-char
 bindkey -M vicmd "\033OH" vi-beginning-of-line
 bindkey -M vicmd "\033OF" vi-end-of-line
+# Not entirely sure these are needed... :S
+bindkey '\e[1~' beginning-of-line
+bindkey '\e[4~' end-of-line
+case $TERM in (xterm*)
+    bindkey '\e[H' beginning-of-line
+    bindkey '\e[F' end-of-line ;;
+esac
 
-autoload run-help
-
+# Some handy aliases
 alias ls="ls -F"
 alias d='ls'
 alias dl='ls -la'
 alias l='ls'
 alias ll='ls -l'
 alias la='ls -la'
+# I've made mistakes too many times...
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-# enable color support of ls and grep
+# Enable color support of ls and grep
 if [ "$TERM" != "dumb" ]; then
     ls_bin="ls"
     grep_bin="grep"
@@ -37,6 +49,7 @@ if [ "$TERM" != "dumb" ]; then
             if [ -x "$better_ls_bin" ]; then
                 ls_bin="$better_ls_bin"
             fi
+            unset better_ls_bin
         fi
 
         eval "$(dircolors -b ~/.dircolors)"
@@ -62,9 +75,10 @@ if [ "$TERM" != "dumb" ]; then
         alias grep="$grep_bin -F"
     fi
 
-    unset ls_bin better_ls_bin grep_bin
+    unset ls_bin grep_bin
 fi
 
+# Set terminal title
 case $TERM in
     (xterm*|*rxvt*)
 #        preexec () { print -Pn "\e]0;%n@%m: $*\a" }
@@ -76,20 +90,15 @@ case $TERM in
         ;;
 esac
 
-bindkey '\e[1~' beginning-of-line
-bindkey '\e[4~' end-of-line
-case $TERM in (xterm*)
-    bindkey '\e[H' beginning-of-line
-    bindkey '\e[F' end-of-line ;;
-esac
-
+# Enable completion
 zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle :compinstall filename '~/.zshrc'
-
 autoload -Uz compinit
 $(print -Pn "compinit -d $HOME/.zcompdump.%m")
 
+# Some options
+setopt emacs                   # $EDITOR begins with vi, I don't want vi mode
 setopt autolist                # List alternatives on tab completion
 setopt autoremoveslash         # Remove '/' from completion
 setopt braceccl                # Allow expressions like {a-zA-Z}
@@ -98,31 +107,32 @@ setopt extendedglob            # Use zsh extended globbing
 setopt hashdirs                # Hash whole dir on exec
 setopt hashlistall             # Hash all on first completion
 setopt histignoredups          # No duplicates in history
-setopt histreduceblanks        # history retty printer
+setopt histreduceblanks        # History pretty printer
 setopt listtypes               # Incl type in completion alternatives
 setopt longlistjobs            # List jobs in long format
 setopt nonomatch               # No errors for unmatched patterns
-setopt pushdignoredups         # No dublicates on pushd dirstack
-setopt completeinword          # copletion in the middle of word
-setopt listpacked              # variable col width for alternatives
+setopt pushdignoredups         # No duplicates on pushd dirstack
+setopt completeinword          # Completion in the middle of word
+setopt listpacked              # Variable col width for alternatives
 setopt noclobber               # Don't overwrite files with >
 
+# Set prompt
 if [ "$TERM" != "dumb" ]; then
     fg_green=$'\033[01;32m'
     fg_red=$'\033[01;31m'
     fg_blue=$'\033[01;34m'
     fg_none=$'\033[00m'
 fi
-
 typeset -A prc
 prc[promptchar]="%{%(?.$fg_green.$fg_red)%}%#%{$fg_none%}"
 prc[userspec]="%{%(!.$fg_red.$fg_green)%}$USER@%m%{$fg_none%}"
 export PROMPT="${prc[userspec]}:%{$fg_blue%}%~/${prc[promptchar]} "
 
+# Load git prompt if possible
 [ -x =git -a -f ~/.zshrc.git ] && source ~/.zshrc.git
 
+# System management aliases
 if [ -x =apt-get ]; then
-    # System management :)
     alias ats='echo Searching... ; aptitude search'
     alias atv='aptitude show'
     alias acs='apt-cache search'
@@ -146,7 +156,6 @@ if [ -x =apt-get ]; then
     alias agc='sudo apt-get autoclean'
     alias agtc='sudo apt-get clean'
 fi
-
 if [ -f /var/log/syslog ]; then
     sudo='sudo '
     [ -r /var/log/syslog ] && sudo=''
@@ -157,4 +166,5 @@ fi
 # Local overrides/additions
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
+# Clean up
 unset prc

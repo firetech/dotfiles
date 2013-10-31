@@ -1,16 +1,10 @@
-HISTSIZE=200
-HISTFILE=~/.zsh_history
-SAVEHIST=200
+#
+# ZSH environment by Joakim Andersson
+#
 
+# Set some standard variables
 export PATH=$HOME/bin:$PATH:/usr/local/sbin:/usr/local/bin
+export PAGER==less
+[[ -x =vim ]] && export EDITOR="vim" || export EDITOR="vi"
 
-export PAGER="$(echo =less)"
-
-if [ -x =vim ]; then
-    export EDITOR="vim"
-else
-    export EDITOR="vi"
-fi
-
-# if $EDITOR begins with vi, ZSH goes into vi mode, and that's a bit too nerdy.
-setopt emacs
+[[ $UID == $GID ]] && umask 002 || umask 022
