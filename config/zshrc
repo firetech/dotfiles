@@ -32,20 +32,17 @@ TRAPEXIT() {
     print -l ${(u)dirstack} >| $DIRSTACKFILE
 }
 
+# If $EDITOR begins with vi, ZSH goes into vi mode, and that's a bit too nerdy
+bindkey -e
+
 # Make Home, End and Delete work as expected
-bindkey -M emacs "\033[3~" delete-char
-bindkey -M emacs "\033OH" beginning-of-line
-bindkey -M emacs "\033OF" end-of-line
-bindkey -M vicmd "\033[3~" vi-delete-char
-bindkey -M vicmd "\033OH" vi-beginning-of-line
-bindkey -M vicmd "\033OF" vi-end-of-line
-# Not entirely sure these are needed... :S
+bindkey "\033OH" beginning-of-line
 bindkey '\e[1~' beginning-of-line
+bindkey '\e[H' beginning-of-line
+bindkey "\033OF" end-of-line
 bindkey '\e[4~' end-of-line
-case $TERM in (xterm*)
-    bindkey '\e[H' beginning-of-line
-    bindkey '\e[F' end-of-line ;;
-esac
+bindkey '\e[F' end-of-line
+bindkey "\033[3~" delete-char
 
 # Some handy aliases
 alias ls="ls -F"
@@ -119,7 +116,6 @@ autoload -Uz compinit
 $(print -Pn "compinit -d $HOME/.zcompdump.%m")
 
 # Some options
-setopt emacs                   # $EDITOR begins with vi, I don't want vi mode
 setopt autolist                # List alternatives on tab completion
 setopt autoremoveslash         # Remove '/' from completion
 setopt braceccl                # Allow expressions like {a-zA-Z}
