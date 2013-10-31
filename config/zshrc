@@ -47,7 +47,7 @@ if [ "$TERM" != "dumb" ]; then
         ls_bin="gls"
         [ -x =ggrep ] && grep_bin="ggrep"
     fi
-    
+
     # Test if ls supports --color=auto
     if [ "$($ls_bin --color=auto >/dev/null 2>&1 ; echo $?)" = "0" ]; then
         alias ls="$ls_bin -F --color=auto"

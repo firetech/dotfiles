@@ -2,7 +2,7 @@
 # git repo prompt for ZSH
 #
 # Given to me by Mattias Jernberg and modified to my needs.
-# -- Joakim Andersson 
+# -- Joakim Andersson
 #
 
 typeset -ga preexec_functions
@@ -31,22 +31,22 @@ git_prompt_parse() {
 	elif test -f "$git_dir/rebase-merge/interactive"; then
 		state=":rebase -i"
 		branch="$(cat "$git_dir/rebase-merge/head-name")"
-	elif test -d "$git_dir/rebase-merge"; then	   
+	elif test -d "$git_dir/rebase-merge"; then
 		state=":rebase -m"
 		branch="$(cat "$git_dir/rebase-merge/head-name")"
-	elif test -f "$git_dir/MERGE_HEAD"; then	     
+	elif test -f "$git_dir/MERGE_HEAD"; then
 		state=":merge"
 		branch="$(git symbolic-ref HEAD 2>/dev/null)"
-	else	                                     
+	else
 		test -f "$git_dir/BISECT_LOG" && state="bisect"
 		branch="$(git symbolic-ref HEAD 2>/dev/null)" || \
 		branch="$(git describe --exact-match HEAD 2>/dev/null)" || \
 		branch="$(cut -c1-7 "$git_dir/HEAD")..."
-	fi	                                      
+	fi
 
 	__ZSH_GIT_FULL_DIR="${git_dir:A:h}"
 	__ZSH_GIT_REPO="${__ZSH_GIT_FULL_DIR}"
-	
+
 	git_pwd="$PWD"
 	__ZSH_GIT_REPO_PATH="${git_pwd##${__ZSH_GIT_FULL_DIR}}"
 
