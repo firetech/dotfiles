@@ -10,6 +10,27 @@ HISTSIZE=500
 HISTFILE=~/.zsh_history
 SAVEHIST=500
 
+# Use and preserve directory stack
+setopt autopushd # Make cd act like pushd
+setopt pushdminus # Invert order for 'cd -X/+X'
+setopt pushdignoredups # No duplicates on dirstack
+DIRSTACKSIZE=20
+DIRSTACKFILE=~/.zdirs
+if [[ -f $DIRSTACKFILE && $#dirstack -eq 0 ]]; then
+    dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
+    # Make 'cd -' go to exit dir of last shell
+    if [[ -d $dirstack[1] && $dirstack[1] != $PWD ]]; then
+        cd $dirstack[1] && cd $OLDPWD
+    elif [[ $dirstack[1] == $PWD ]]; then
+        # Exit dir of last shell is $PWD, pop to avoid duplicates
+        popd > /dev/null
+    fi
+fi
+TRAPEXIT() {
+    [[ -e $DIRSTACKFILE ]] || touch $DIRSTACKFILE
+    dirstack=( $PWD $dirstack )
+    print -l ${(u)dirstack} >| $DIRSTACKFILE
+}
 
 # Make Home, End and Delete work as expected
 bindkey -M emacs "\033[3~" delete-char
@@ -111,7 +132,6 @@ setopt histreduceblanks        # History pretty printer
 setopt listtypes               # Incl type in completion alternatives
 setopt longlistjobs            # List jobs in long format
 setopt nonomatch               # No errors for unmatched patterns
-setopt pushdignoredups         # No duplicates on pushd dirstack
 setopt completeinword          # Completion in the middle of word
 setopt listpacked              # Variable col width for alternatives
 setopt noclobber               # Don't overwrite files with >
