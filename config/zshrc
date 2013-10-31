@@ -36,13 +36,13 @@ TRAPEXIT() {
 bindkey -e
 
 # Make Home, End and Delete work as expected
-bindkey "\033OH" beginning-of-line
+bindkey '\eOH' beginning-of-line
 bindkey '\e[1~' beginning-of-line
 bindkey '\e[H' beginning-of-line
-bindkey "\033OF" end-of-line
+bindkey '\eOF' end-of-line
 bindkey '\e[4~' end-of-line
 bindkey '\e[F' end-of-line
-bindkey "\033[3~" delete-char
+bindkey '\e[3~' delete-char
 
 # Some handy aliases
 alias ls="ls -F"
@@ -134,10 +134,10 @@ setopt noclobber               # Don't overwrite files with >
 
 # Set prompt
 if [ "$TERM" != "dumb" ]; then
-    fg_green=$'\033[01;32m'
-    fg_red=$'\033[01;31m'
-    fg_blue=$'\033[01;34m'
-    fg_none=$'\033[00m'
+    fg_green=$'\e[01;32m'
+    fg_red=$'\e[01;31m'
+    fg_blue=$'\e[01;34m'
+    fg_none=$'\e[00m'
 fi
 typeset -A prc
 prc[promptchar]="%{%(?.$fg_green.$fg_red)%}%#%{$fg_none%}"
