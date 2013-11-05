@@ -38,11 +38,17 @@ _current_day() {
     echo $(($(date +%s) / 60 / 60 / 24))
 }
 _update_timestamp() {
+    local t=$1
+    [[ -z $t ]] && t=$(_current_day)
     [[ -f $timestamp_file ]] || touch $timestamp_file
-    echo "timestamp=$(_current_day)" >| $timestamp_file
+    echo "timestamp=$t" >| $timestamp_file
 }
 
-if [[ $1 == -a ]]; then
+if [[ $1 == defer ]]; then
+    _update_timestamp 0
+    exit 0
+fi
+if [[ $1 == auto ]]; then
     # Running automatically from ~/.zshrc.
     if [[ -f $timestamp_file ]]; then
         source $timestamp_file
@@ -63,7 +69,7 @@ fi
 cd $repo
 
 _log_info "Checking for updates..."
-git fetch || \
+git fetch -q || \
         _error "Fetching from git server failed."
 
 commits_behind=$( (git log --oneline HEAD..$branch | wc -l) || \

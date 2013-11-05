@@ -185,6 +185,9 @@ update_dotfiles() {
     local repo=${zshrc:A:h:h}
     zsh $repo/.update.zsh $@
 }
+deferred_update_dotfiles() {
+    update_dotfiles defer
+}
 
 # Local overrides/additions
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
@@ -193,4 +196,4 @@ update_dotfiles() {
 unset prc
 
 # Update and possibly reload config.
-update_dotfiles -a && source ~/.zshrc
+update_dotfiles auto && source ~/.zshrc
