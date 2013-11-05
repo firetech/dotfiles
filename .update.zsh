@@ -10,7 +10,6 @@ zshrc=$HOME/.zshrc
 repo=${zshrc:A:h:h}
 timestamp_file=$repo/.update_timestamp
 update_limit=7
-git="git --git-dir=\"$repo/.git\" --work-tree=\"$repo\""
 branch=origin/master
 estatus=0
 
@@ -61,24 +60,30 @@ if [[ $1 == -a ]]; then
     estatus=1
 fi
 
+cd $repo
+
 _log_info "Checking for updates..."
-eval "$git fetch" || \
+git fetch || \
         _error "Fetching from git server failed."
 
-commits_behind=$(eval "$git log --oneline HEAD..$branch | wc -l" || \
+commits_behind=$( (git log --oneline HEAD..$branch | wc -l) || \
         _error "Checking number of commits behind failed." )
 
 if [[ $commits_behind -gt 0 ]]; then
     _log_info "Found $commits_behind new commits. Updating..."
-    eval "$git rebase -q $branch" || \
+    pushd $repo > /dev/null || \
+            _error "Failed to enter '$repo'."
+    git rebase -q $branch || \
             _error "Updating failed." "Manual merge in '$repo' needed."
+    popd > /dev/null || \
+            _error "Failed to return from '$repo'."
     _log_info "Update successful."
     estatus=0
 fi
 
-commits_ahead=$(eval "$git log --oneline $branch..HEAD | wc -l" || \
+commits_ahead=$( (git log --oneline $branch..HEAD | wc -l) || \
         _error "Checking number of commits ahead failed." )
-git_status=$(eval "$git status --porcelain | wc -l" || \
+git_status=$( (git status --porcelain | wc -l) || \
         _error "Checking git file status." )
 
 [[ $commits_ahead -gt 0 || $git_status -gt 0 ]] && \

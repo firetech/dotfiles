@@ -181,7 +181,8 @@ fi
 
 # Function to update dotfiles
 update_dotfiles() {
-    local zshrc=$HOME/.zshrc repo=${zshrc:A:h:h}
+    local zshrc=$HOME/.zshrc
+    local repo=${zshrc:A:h:h}
     zsh $repo/.update.zsh $@
 }
 
