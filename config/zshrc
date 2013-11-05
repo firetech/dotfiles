@@ -179,6 +179,12 @@ if [ -f /var/log/syslog ]; then
     unset sudo
 fi
 
+# Function to update dotfiles
+update_dotfiles() {
+    local zshrc=$HOME/.zshrc repo=${zshrc:A:h:h}
+    zsh $repo/.update.zsh $@
+}
+
 # Local overrides/additions
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
@@ -186,6 +192,4 @@ fi
 unset prc
 
 # Update and possibly reload config.
-zshrc=$HOME/.zshrc repo=${zshrc:A:h:h}
-zsh $repo/.update.zsh -a && source ~/.zshrc
-unset zshrc repo
+update_dotfiles -a && source ~/.zshrc

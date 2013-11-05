@@ -1,7 +1,8 @@
 #
 # Dotfiles automatic update by Joakim Andersson
 #
-# This is run automatically by ~/.zshrc once per $update_limit days.
+# This is run automatically by ~/.zshrc once per $update_limit days or manually
+# by running update_dotfiles.
 # Some minor inspiration from oh-my-zsh's upgrade code.
 #
 
