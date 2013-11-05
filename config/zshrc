@@ -184,3 +184,8 @@ fi
 
 # Clean up
 unset prc
+
+# Update and possibly reload config.
+zshrc=$HOME/.zshrc repo=${zshrc:A:h:h}
+zsh $repo/.update.zsh -a && source ~/.zshrc
+unset zshrc repo
