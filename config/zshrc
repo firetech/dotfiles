@@ -57,14 +57,14 @@ alias cp='cp -i'
 alias mv='mv -i'
 
 # Enable color support of ls and grep
-if [ "$TERM" != "dumb" ]; then
+if [[ $TERM != dumb ]]; then
     ls_bin="ls"
     grep_bin="grep"
-    if [ -x =dircolors ]; then
+    if [[ -x =dircolors ]]; then
         # Support for systems where GNU ls is placed elsewhere
-        if [ -x =dirname ]; then
+        if [[ -x =dirname ]]; then
             better_ls_bin="$(dirname =dircolors)/ls"
-            if [ -x "$better_ls_bin" ]; then
+            if [[ -x "$better_ls_bin" ]]; then
                 ls_bin="$better_ls_bin"
             fi
             unset better_ls_bin
@@ -73,21 +73,21 @@ if [ "$TERM" != "dumb" ]; then
         eval "$(dircolors -b ~/.dircolors)"
 
     # Fallback to default BSD names
-    elif [ -x =gdircolors -a -x =gls]; then
+    elif [[ -x =gdircolors && -x =gls ]]; then
         eval "$(gdircolors -b ~/.dircolors)"
         ls_bin="gls"
-        [ -x =ggrep ] && grep_bin="ggrep"
+        [[ -x =ggrep ]] && grep_bin="ggrep"
     fi
 
     # Test if ls supports --color=auto
-    if [ "$($ls_bin --color=auto >/dev/null 2>&1 ; echo $?)" = "0" ]; then
+    if $ls_bin --color=auto >/dev/null 2>&1; then
         alias ls="$ls_bin -F --color=auto"
     else
         alias ls="$ls_bin -F"
     fi
 
     # Test if grep supports --color=auto
-    if [ "$(echo a | $grep_bin --color=auto a >/dev/null 2>&1 ; echo $?)" = "0" ]; then
+    if echo a | $grep_bin --color=auto a >/dev/null 2>&1; then
         alias grep="$grep_bin --color=auto"
     else
         alias grep="$grep_bin -F"
@@ -133,7 +133,7 @@ setopt listpacked              # Variable col width for alternatives
 setopt noclobber               # Don't overwrite files with >
 
 # Set prompt
-if [ "$TERM" != "dumb" ]; then
+if [[ $TERM != dumb ]]; then
     fg_green=$'\e[01;32m'
     fg_red=$'\e[01;31m'
     fg_blue=$'\e[01;34m'
@@ -145,10 +145,10 @@ prc[userspec]="%{%(!.$fg_red.$fg_green)%}$USER@%m%{$fg_none%}"
 export PROMPT="${prc[userspec]}:%{$fg_blue%}%~/${prc[promptchar]} "
 
 # Load git prompt if possible
-[ -x =git -a -f ~/.zshrc.git ] && source ~/.zshrc.git
+[[ -x =git && -f ~/.zshrc.git ]] && source ~/.zshrc.git
 
 # System management aliases
-if [ -x =apt-get ]; then
+if [[ -x =apt-get ]]; then
     alias ats='echo Searching... ; aptitude search'
     alias atv='aptitude show'
     alias acs='apt-cache search'
@@ -172,9 +172,9 @@ if [ -x =apt-get ]; then
     alias agc='sudo apt-get autoclean'
     alias agtc='sudo apt-get clean'
 fi
-if [ -f /var/log/syslog ]; then
+if [[ -f /var/log/syslog ]]; then
     sudo='sudo '
-    [ -r /var/log/syslog ] && sudo=''
+    [[ -r /var/log/syslog ]] && sudo=''
     alias syslog="${sudo}tail -F /var/log/syslog"
     unset sudo
 fi
@@ -186,7 +186,7 @@ update_dotfiles() {
 }
 
 # Local overrides/additions
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # Clean up
 unset prc
