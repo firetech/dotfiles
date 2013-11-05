@@ -5,6 +5,7 @@
 # by running update_dotfiles.
 # Some minor inspiration from oh-my-zsh's upgrade code.
 #
+setopt nonomatch
 
 zshrc=$HOME/.zshrc
 repo=${zshrc:A:h:h}
@@ -64,6 +65,15 @@ if [[ $1 == auto ]]; then
     [[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 1
 
     estatus=1
+fi
+
+if [[ ! -x =git ]]; then
+    _update_timestamp
+    _error "Can't upgrade, no git found."
+fi
+if [[ ! -d $repo/.git ]]; then
+    _update_timestamp
+    _error "Can't upgrade, '$repo' is not a git repo."
 fi
 
 cd $repo
