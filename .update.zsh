@@ -46,10 +46,11 @@ _update_timestamp() {
 }
 
 if [[ $1 == defer ]]; then
+    _log_info "Deferring update check for next ZSH launch."
     _update_timestamp 0
     exit 1
-fi
-if [[ $1 == auto ]]; then
+
+elif [[ $1 == auto ]]; then
     # Running automatically from ~/.zshrc.
     if [[ -f $timestamp_file ]]; then
         source $timestamp_file
@@ -63,6 +64,9 @@ if [[ $1 == auto ]]; then
     fi
 
     [[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 1
+
+elif [[ $# -gt 0 ]]; then
+    _error "Unknown argument '$1'"
 fi
 
 if [[ ! -x =git ]]; then
