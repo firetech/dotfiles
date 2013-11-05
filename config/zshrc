@@ -5,15 +5,32 @@
 # Mutated heavily over the years.
 #
 
+# Some options
+setopt autolist                # List alternatives on tab completion
+setopt autoremoveslash         # Remove '/' from completion
+setopt braceccl                # Allow expressions like {a-zA-Z}
+setopt correct                 # Try to correct spelling of commands
+setopt extendedglob            # Use zsh extended globbing
+setopt hashdirs                # Hash whole dir on exec
+setopt hashlistall             # Hash all on first completion
+setopt histignoredups          # No duplicates in history
+setopt histreduceblanks        # History pretty printer
+setopt listtypes               # Incl type in completion alternatives
+setopt longlistjobs            # List jobs in long format
+setopt nonomatch               # No errors for unmatched patterns
+setopt completeinword          # Completion in the middle of word
+setopt listpacked              # Variable col width for alternatives
+setopt noclobber               # Don't overwrite files with >
+setopt autopushd               # Make cd act like pushd
+setopt pushdminus              # Invert order for 'cd -X/+X'
+setopt pushdignoredups         # No duplicates on dirstack
+
 # Preserve history
 HISTSIZE=500
 HISTFILE=~/.zsh_history
 SAVEHIST=500
 
 # Use and preserve directory stack
-setopt autopushd # Make cd act like pushd
-setopt pushdminus # Invert order for 'cd -X/+X'
-setopt pushdignoredups # No duplicates on dirstack
 DIRSTACKSIZE=20
 DIRSTACKFILE=~/.zdirs
 if [[ -f $DIRSTACKFILE && $#dirstack -eq 0 ]]; then
@@ -115,22 +132,6 @@ zstyle :compinstall filename '~/.zshrc'
 autoload -Uz compinit
 $(print -Pn "compinit -d $HOME/.zcompdump.%m")
 
-# Some options
-setopt autolist                # List alternatives on tab completion
-setopt autoremoveslash         # Remove '/' from completion
-setopt braceccl                # Allow expressions like {a-zA-Z}
-setopt correct                 # Try to correct spelling of commands
-setopt extendedglob            # Use zsh extended globbing
-setopt hashdirs                # Hash whole dir on exec
-setopt hashlistall             # Hash all on first completion
-setopt histignoredups          # No duplicates in history
-setopt histreduceblanks        # History pretty printer
-setopt listtypes               # Incl type in completion alternatives
-setopt longlistjobs            # List jobs in long format
-setopt nonomatch               # No errors for unmatched patterns
-setopt completeinword          # Completion in the middle of word
-setopt listpacked              # Variable col width for alternatives
-setopt noclobber               # Don't overwrite files with >
 
 # Set prompt
 if [[ $TERM != dumb ]]; then
