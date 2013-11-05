@@ -185,6 +185,17 @@ update_dotfiles() {
     local zshrc=$HOME/.zshrc
     local repo=${zshrc:A:h:h}
     zsh $repo/.update.zsh $@
+
+    local estatus=$?
+    if [[ $estatus -lt 2 ]]; then
+        if [[ $estatus == 0 ]]; then
+            source ~/.zshenv
+            source ~/.zshrc
+        fi
+        return 0
+    else
+        return 1
+    fi
 }
 
 # Local overrides/additions
@@ -194,4 +205,4 @@ update_dotfiles() {
 unset prc
 
 # Update and possibly reload config.
-update_dotfiles auto && source ~/.zshrc
+update_dotfiles auto

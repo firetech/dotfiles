@@ -12,7 +12,7 @@ repo=${zshrc:A:h:h}
 timestamp_file=$repo/.update_timestamp
 update_limit=7
 branch=origin/master
-estatus=0
+estatus=1
 
 __log_print() {
     local pre="[update_dotfiles] " post
@@ -32,7 +32,7 @@ _log_warn() {
 }
 _error() {
     __log_print 31 $@ >&2
-    exit 1
+    exit 2
 }
 
 _current_day() {
@@ -47,7 +47,7 @@ _update_timestamp() {
 
 if [[ $1 == defer ]]; then
     _update_timestamp 0
-    exit 0
+    exit 1
 fi
 if [[ $1 == auto ]]; then
     # Running automatically from ~/.zshrc.
@@ -63,8 +63,6 @@ if [[ $1 == auto ]]; then
     fi
 
     [[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 1
-
-    estatus=1
 fi
 
 if [[ ! -x =git ]]; then
@@ -94,6 +92,8 @@ if [[ $commits_behind -gt 0 ]]; then
     popd > /dev/null || \
             _error "Failed to return from '$repo'."
     _log_info "Update successful."
+
+    # Signal to reload zsh config
     estatus=0
 fi
 
@@ -106,4 +106,6 @@ git_status=$( (git status --porcelain | wc -l) || \
     _log_warn "Found $commits_ahead unpushed commit(s) and $git_status uncommitted file(s)."
 
 _update_timestamp
+
+[[ $estatus == 0 ]] && _log_info "Reloading ZSH config..."
 exit $estatus
