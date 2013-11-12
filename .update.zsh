@@ -12,7 +12,7 @@ repo=${zshrc:A:h:h}
 timestamp_file=$repo/.update_timestamp
 update_limit=7
 branch=origin/master
-estatus=1
+exit_status=1
 
 __log_print() {
     local pre="[update_dotfiles] " post
@@ -80,6 +80,16 @@ fi
 
 cd $repo
 
+commits_ahead=$( (git log --oneline $branch..HEAD | wc -l) || \
+        _error "Checking number of commits ahead failed." )
+[[ $commits_ahead -gt 0 ]] && \
+    _log_warn "Found $commits_ahead unpushed commit(s)."
+
+uncommitted_files=$( (git status --porcelain | wc -l) || \
+        _error "Checking git file status failed." )
+[[ $uncommitted_files -gt 0 ]] && \
+    _log_warn "Found $uncommitted_files uncommitted file(s)."
+
 _log_info "Checking for updates..."
 git fetch -q || \
         _error "Fetching from git server failed."
@@ -89,27 +99,15 @@ commits_behind=$( (git log --oneline HEAD..$branch | wc -l) || \
 
 if [[ $commits_behind -gt 0 ]]; then
     _log_info "Found $commits_behind new commits. Updating..."
-    pushd $repo > /dev/null || \
-            _error "Failed to enter '$repo'."
     git rebase -q $branch || \
             _error "Updating failed." "Manual merge in '$repo' needed."
-    popd > /dev/null || \
-            _error "Failed to return from '$repo'."
     _log_info "Update successful."
 
     # Signal to reload zsh config
-    estatus=0
+    exit_status=0
 fi
-
-commits_ahead=$( (git log --oneline $branch..HEAD | wc -l) || \
-        _error "Checking number of commits ahead failed." )
-git_status=$( (git status --porcelain | wc -l) || \
-        _error "Checking git file status." )
-
-[[ $commits_ahead -gt 0 || $git_status -gt 0 ]] && \
-    _log_warn "Found $commits_ahead unpushed commit(s) and $git_status uncommitted file(s)."
 
 _update_timestamp
 
-[[ $estatus == 0 ]] && _log_info "Reloading ZSH config..."
-exit $estatus
+[[ $exit_status == 0 ]] && _log_info "Reloading ZSH config..."
+exit $exit_status
