@@ -30,5 +30,5 @@ command StripTWS call <SID>StripTrailingWhitespace()
 command SudoWrite %!sudo tee > /dev/null %
 cabbrev w!! <c-r>=(getcmdpos()==1 && getcmdtype()==':' ? 'SudoWrite' : 'w!!')<CR>
 
-" Enter paste mode for git commit messages
-autocmd FileType gitcommit setlocal paste
+" Disable smartindent/autoindent for git commit messages
+autocmd FileType gitcommit setlocal noautoindent nosmartindent
