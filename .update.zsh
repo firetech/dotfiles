@@ -10,7 +10,7 @@ setopt nonomatch
 zshrc=$HOME/.zshrc
 repo=${zshrc:A:h:h}
 timestamp_file=$repo/.update_timestamp
-update_limit=7
+update_limit=14
 branch=origin/master
 exit_status=1
 
