@@ -195,8 +195,12 @@ update_dotfiles() {
     fi
 }
 reload_zshconfig() {
+    __skip_update=1
+
     source ~/.zshenv
     source ~/.zshrc
+
+    unset __skip_update
 }
 
 # Local overrides/additions
@@ -206,4 +210,4 @@ reload_zshconfig() {
 unset prc
 
 # Update and possibly reload config.
-update_dotfiles auto
+[[ $__skip_update != 1 ]] && update_dotfiles auto
