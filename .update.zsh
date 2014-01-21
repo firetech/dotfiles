@@ -12,7 +12,7 @@ repo=${zshrc:A:h:h}
 timestamp_file=$repo/.update_timestamp
 update_limit=14
 branch=origin/master
-exit_status=1
+exit_status=0
 
 __log_print() {
     local pre="[update_dotfiles] " post
@@ -32,7 +32,7 @@ _log_warn() {
 }
 _error() {
     __log_print 31 $@ >&2
-    exit 2
+    exit 1
 }
 
 _current_day() {
@@ -48,7 +48,7 @@ _update_timestamp() {
 if [[ $1 == defer ]]; then
     _log_info "Deferring update check for next ZSH launch."
     _update_timestamp 0
-    exit 1
+    exit 0
 
 elif [[ $1 == auto ]]; then
     # Running automatically from ~/.zshrc.
@@ -56,14 +56,14 @@ elif [[ $1 == auto ]]; then
         source $timestamp_file
         if [[ -z $timestamp ]]; then
             _update_timestamp
-            exit 1
+            exit 0
         fi
     else
         _update_timestamp
-        exit 1
+        exit 0
     fi
 
-    [[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 1
+    [[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 0
 
 elif [[ $# -gt 0 ]]; then
     _error "Unknown argument '$1'"
@@ -104,10 +104,10 @@ if [[ $commits_behind -gt 0 ]]; then
     _log_info "Update successful."
 
     # Signal to reload zsh config
-    exit_status=0
+    exit_status=0x8
 fi
 
 _update_timestamp
 
-[[ $exit_status == 0 ]] && _log_info "Reloading ZSH config..."
+[[ $exit_status -eq 0x8 ]] && _log_info "Reloading ZSH config..."
 exit $exit_status

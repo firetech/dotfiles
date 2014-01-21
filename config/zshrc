@@ -187,11 +187,11 @@ update_dotfiles() {
     zsh $repo/.update.zsh $@
 
     local estatus=$?
-    if [[ $estatus -lt 2 ]]; then
-        [[ $estatus == 0 ]] && reload_zshconfig
+    if [[ $estatus -eq 0x8 ]]; then
+        reload_zshconfig
         return 0
     else
-        return 1
+        return $estatus
     fi
 }
 reload_zshconfig() {
