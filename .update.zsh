@@ -98,10 +98,18 @@ commits_behind=$( (git log --oneline HEAD..$branch | wc -l) || \
         _error "Checking number of commits behind failed." )
 
 if [[ $commits_behind -gt 0 ]]; then
+    file_list_pre=$(ls config)
+
     _log_info "Found $commits_behind new commits. Updating..."
     git rebase -q $branch || \
             _error "Updating failed." "Manual merge in '$repo' needed."
     _log_info "Update successful."
+
+    file_list_post=$(ls config)
+    if [[ $file_list_pre != $file_list_post ]]; then
+        _log_warn "File list has changed." \
+            "You may want to re-run '$repo/install'."
+    fi
 
     # Signal to reload zsh config
     exit_status=0x8
