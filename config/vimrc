@@ -2,6 +2,11 @@
 set background=dark ignorecase smartcase tabstop=4 smartindent backspace=2 ruler shiftwidth=4
 syntax on
 
+" Fix gvim background color
+if has('gui_running')
+  highlight Normal guifg=white guibg=black
+endif
+
 " Highlight trailing whitespace and space before tab
 highlight ExtraWhitespace ctermbg=darkred guibg=darkred
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=darkred guibg=darkred
