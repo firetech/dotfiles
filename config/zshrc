@@ -24,6 +24,7 @@ setopt noclobber               # Don't overwrite files with >
 setopt autopushd               # Make cd act like pushd
 setopt pushdminus              # Invert order for 'cd -X/+X'
 setopt pushdignoredups         # No duplicates on dirstack
+setopt histignorespace         # Don't add space indented lines to history
 
 # Preserve history
 HISTSIZE=500
