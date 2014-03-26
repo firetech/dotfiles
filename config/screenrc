@@ -1,0 +1,10 @@
+vbell off
+startup_message off
+unsetenv DISPLAY
+
+bindkey "^[[1;5D" prev  # change window with ctrl-left
+bindkey "^[[1;5C" next  # change window with ctrl-right
+
+hardstatus alwayslastline
+hardstatus string '%{= wb}[%{k}%H%{b}]%=%{k} %?%-Lw%?%{kb}[%{w}%n*%f %t%? %{r}(%{w}%u%{r})%?%{b}]%{wk}%?%+Lw%? %=%{b}[%{k}%c%{b}]'
+
