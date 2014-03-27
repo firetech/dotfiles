@@ -30,8 +30,11 @@ _log_info() {
 _log_warn() {
     __log_print 33 $@ >&2
 }
-_error() {
+_log_error() {
     __log_print 31 $@ >&2
+}
+_fatal() {
+    _log_error $@
     exit 1
 }
 
@@ -66,49 +69,62 @@ elif [[ $1 == auto ]]; then
     [[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 0
 
 elif [[ $# -gt 0 ]]; then
-    _error "Unknown argument '$1'"
+    _fatal "Unknown argument '$1'"
 fi
 
 if [[ ! -x =git ]]; then
     _update_timestamp
-    _error "Can't upgrade, no git found."
+    _fatal "Can't upgrade, no git found."
 fi
 if [[ ! -d $repo/.git ]]; then
     _update_timestamp
-    _error "Can't upgrade, '$repo' is not a git repo."
+    _fatal "Can't upgrade, '$repo' is not a git repo."
 fi
 
 cd $repo
 
 commits_ahead=$( (git log --oneline $branch..HEAD | wc -l) || \
-        _error "Checking number of commits ahead failed." )
+        _fatal "Checking number of commits ahead failed." )
 [[ $commits_ahead -gt 0 ]] && \
     _log_warn "Found $commits_ahead unpushed commit(s)."
 
 uncommitted_files=$( (git status --porcelain | wc -l) || \
-        _error "Checking git file status failed." )
+        _fatal "Checking git file status failed." )
 [[ $uncommitted_files -gt 0 ]] && \
     _log_warn "Found $uncommitted_files uncommitted file(s)."
 
 _log_info "Checking for updates..."
 git fetch -q || \
-        _error "Fetching from git server failed."
+        _fatal "Fetching from git server failed."
 
 commits_behind=$( (git log --oneline HEAD..$branch | wc -l) || \
-        _error "Checking number of commits behind failed." )
+        _fatal "Checking number of commits behind failed." )
 
 if [[ $commits_behind -gt 0 ]]; then
     file_list_pre=$(ls config)
 
     _log_info "Found $commits_behind new commits. Updating..."
     git rebase -q $branch || \
-            _error "Updating failed." "Manual merge in '$repo' needed."
+            _fatal "Updating failed." "Manual merge in '$repo' needed."
     _log_info "Update successful."
 
-    file_list_post=$(ls config)
-    if [[ $file_list_pre != $file_list_post ]]; then
-        _log_warn "File list has changed." \
-            "You may want to re-run '$repo/install'."
+    if [[ $file_list_pre != $(ls config) ]]; then
+        file_list_diff=$(ls config | diff --unchanged-line-format= \
+                --new-line-format='+ .%L' \
+                --old-line-format='- .%L' \
+                =(echo $file_list_pre) -)
+        # Separate and split lines into array
+        file_list_new=(${(f)"$(echo $file_list_diff | grep '^+')"})
+        file_list_rm=(${(f)"$(echo $file_list_diff | grep '^-')"})
+        if [[ -n $file_list_new ]]; then
+            _log_warn "New files:" $file_list_new
+            _log_info "Re-running install script..."
+            $repo/install || _log_error "Install script failed!"
+        fi
+        if [[ -n $file_list_rm ]]; then
+             _log_warn "Removed files:" $file_list_rm \
+                    "You may want to remove these symlinks."
+        fi
     fi
 
     # Signal to reload zsh config
