@@ -24,11 +24,11 @@ if [[ ! -O $abs_source ]]; then
 	exit 1
 fi
 
-echo -n "Continue? [y/N] "
+echo -n "Continue? [Y/n] "
 
 read ans
 
-if [[ "${ans:l}" != "y" ]]; then
+if [[ "${ans:l}" = "n" ]]; then
 	echo "Abort."
 	exit 1
 fi
