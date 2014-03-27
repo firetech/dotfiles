@@ -117,12 +117,12 @@ fi
 # Set terminal title
 case $TERM in
     (xterm*|*rxvt*)
-#        preexec () { print -Pn "\e]0;%n@%m: $*\a" }
+        preexec () { print -Pn "\e]0;%n@%m: ${1[(wr)^(*=*|sudo|-*)]}\a" }
         precmd () { print -Pn "\e]0;%n@%m: %~\a" }
         ;;
     (screen)
-        preexec () { echo -ne "\ek${1[(wr)^(*=*|sudo|-*)]}\e\\" }
-        precmd () { echo -ne "\ekzsh\e\\" }
+        preexec () { print -Pn "\ek${1[(wr)^(*=*|sudo|-*)]}\e\\" }
+        precmd () { print -Pn "\ek%~\e\\" }
         ;;
 esac
 

@@ -5,6 +5,7 @@ unsetenv DISPLAY
 bindkey "^[[1;5D" prev  # change window with ctrl-left
 bindkey "^[[1;5C" next  # change window with ctrl-right
 
-hardstatus alwayslastline
-hardstatus string '%{= wb}[%{k}%H%{b}]%=%{k} %?%-Lw%?%{kb}[%{w}%n*%f %t%? %{r}(%{w}%u%{r})%?%{b}]%{wk}%?%+Lw%? %=%{b}[%{k}%c%{b}]'
-
+termcapinfo xterm*|Eterm|mlterm "hs:ts=\E]0;:fs=\007:ds=\E]0;screen\007"
+hardstatus off
+hardstatus string "$USER@%H%?: %t%?"
+caption always "%{= wb}[%{k}%H%{b}]%=%{k} %?%-Lw%?%{kb}[%{w}%n*%f %t%? (%h)%?%? %{r}(%{w}%u%{r})%?%{b}]%{wk}%?%+Lw%? %=%{b}[%{k}%c%{b}]"
