@@ -108,7 +108,7 @@ if [[ $TERM != dumb ]]; then
     if echo a | $grep_bin --color=auto a >/dev/null 2>&1; then
         alias grep="$grep_bin --color=auto"
     else
-        alias grep="$grep_bin -F"
+        alias grep="$grep_bin"
     fi
 
     unset ls_bin grep_bin
