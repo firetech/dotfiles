@@ -1,1 +1,11 @@
 clear
+
+if [[ -x =chvt && -x =tty ]]; then
+	tty=$(tty)
+	if [[ $tty =~ ^\/dev\/tty[0-9]+ ]]; then
+		# on a local tty, flush the scrollback
+		ttyn=${tty/\/dev\/tty/}
+		chvt $(( $ttyn + 1 ))
+		chvt $ttyn
+	fi
+fi
