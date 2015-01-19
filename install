@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-target="$HOME"
+target="${HOME:A}"
 source="${0:A:h}/config"
 backup="${0:A:h}/backup/$(date +%Y%m%d_%H%M%S)"
 
