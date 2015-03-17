@@ -25,6 +25,7 @@ setopt autopushd               # Make cd act like pushd
 setopt pushdminus              # Invert order for 'cd -X/+X'
 setopt pushdignoredups         # No duplicates on dirstack
 setopt histignorespace         # Don't add space indented lines to history
+REPORTTIME=15                  # Report usage stats for long running commands
 
 # Preserve history
 HISTSIZE=500
