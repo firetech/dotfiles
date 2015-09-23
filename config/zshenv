@@ -5,6 +5,8 @@
 # Set some standard variables
 export PATH=$HOME/bin:$PATH:/usr/local/sbin:/usr/local/bin
 export PAGER==less
+export LESS="difrR"
+
 [[ -x =vim ]] && export EDITOR="vim" || export EDITOR="vi"
 
 [[ $UID == $GID ]] && umask 002 || umask 022
