@@ -22,4 +22,4 @@ One can also make sure an automatic update check is run on the next opening of Z
 License & Copyright
 ===================
 
-All files in this repository are, unless stated otherwise, Copyright Joakim Andersson and free to redistribute and/or modify as long as credit is given where credit is due.
+All files in this repository are, unless stated otherwise, Copyright Joakim Tufvegren and free to redistribute and/or modify as long as credit is given where credit is due.

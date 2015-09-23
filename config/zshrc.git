@@ -2,7 +2,7 @@
 # git repo prompt for ZSH
 #
 # Given to me by Mattias Jernberg and modified to my needs.
-# -- Joakim Andersson
+# -- Joakim Tufvegren
 #
 
 typeset -ga preexec_functions

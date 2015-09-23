@@ -1,3 +1,7 @@
+"
+" vim settings by Joakim Tufvegren
+"
+
 " Basic settings
 set background=dark ignorecase smartcase tabstop=4 smartindent backspace=2 ruler shiftwidth=4
 syntax on

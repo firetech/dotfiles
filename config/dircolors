@@ -1,6 +1,9 @@
 # Configuration file for dircolors, a utility to help you set the
 # LS_COLORS environment variable used by GNU ls with the --color option.
 
+# Based on Debian Linux's default config. Modified by Joakim Tufvegren.
+# Main difference is highlighting of broken symlinks.
+
 # The keywords COLOR, OPTIONS, and EIGHTBIT (honored by the
 # slackware version of dircolors) are recognized but ignored.
 

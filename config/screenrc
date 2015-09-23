@@ -1,3 +1,7 @@
+#
+# screen settings by Joakim Tufvegren
+#
+
 vbell off
 startup_message off
 unsetenv DISPLAY

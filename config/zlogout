@@ -1,5 +1,9 @@
-clear
+#
+# ZSH logout procedure by Joakim Tufvegren
+#
 
+# Clear screen and flush the scrollback if possible.
+clear
 if [[ -x =chvt && -x =tty ]]; then
 	tty=$(tty)
 	if [[ $tty =~ ^\/dev\/tty[0-9]+ ]]; then

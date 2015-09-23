@@ -1,3 +1,6 @@
+#
+# IRB settings by Joakim Tufvegren
+#
 
 require 'pp'
 require 'irb/completion'
