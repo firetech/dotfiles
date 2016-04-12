@@ -9,6 +9,7 @@ syntax on
 " Omni-completion and youcompleteme
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
+set completeopt=menuone
 " Use SQL omnicomplete without dbext by default
 let g:omni_sql_default_compl_type = 'syntax'
 " Switch to a more C friendly default config for Clang completion
