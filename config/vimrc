@@ -5,6 +5,7 @@
 " Basic settings
 set background=dark ignorecase smartcase tabstop=4 smartindent backspace=2 ruler shiftwidth=4
 syntax on
+filetype plugin on
 
 " Fix gvim background color
 if has('gui_running')
