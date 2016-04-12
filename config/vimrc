@@ -7,6 +7,9 @@ set background=dark ignorecase smartcase tabstop=4 smartindent backspace=2 ruler
 syntax on
 filetype plugin on
 
+" Use SQL omnicomplete without dbext by default
+let g:omni_sql_default_compl_type = 'syntax'
+
 " Fix gvim background color
 if has('gui_running')
   highlight Normal guifg=white guibg=black
