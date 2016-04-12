@@ -1,3 +1,4 @@
 .update_timestamp
 backup
 config/vim/.netrwhist
+config/vim/doc/tags
