@@ -182,6 +182,8 @@ if [[ -f /var/log/syslog ]]; then
     unset sudo
 fi
 
+alias vim_swp_reopen='vim -p $(find . -name .*.sw? | sed -e "s/\/\.\(.*\)\.sw.$/\/\1/g")'
+
 # Functions to update dotfiles and reload ZSH config
 update_dotfiles() {
     local zshrc=$HOME/.zshrc
