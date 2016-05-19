@@ -15,61 +15,61 @@ git_prompt_parse() {
 
 	__ZSH_GIT_REPO=""
 
-	git_dir="$(git rev-parse --git-dir 2> /dev/null)" || return
+	git_dir=$(git rev-parse --git-dir 2> /dev/null) || return
 
 	state=""
 	# rewritten by Thomas Ritz <thomas(at)galaxy-ritz(dot)de>
-	if [[ -d "$git_dir/rebase-apply" ]]; then
-		if [[ -f "$git_dir/rebase-apply/rebasing" ]]; then
+	if [[ -d $git_dir/rebase-apply ]]; then
+		if [[ -f $git_dir/rebase-apply/rebasing ]]; then
 		        state=":rebase"
-		elif [[ -f "$git_dir/rebase-apply/applying" ]]; then
+		elif [[ -f $git_dir/rebase-apply/applying ]]; then
 		        state=":am"
 		else
 		        state=":am/rebase"
 		fi
-		branch="$(git symbolic-ref HEAD 2>/dev/null)"
-	elif [[ -f "$git_dir/rebase-merge/interactive" ]]; then
+		branch=$(git symbolic-ref HEAD 2>/dev/null)
+	elif [[ -f $git_dir/rebase-merge/interactive ]]; then
 		state=":rebase -i"
-		branch="$(cat "$git_dir/rebase-merge/head-name")"
-	elif [[ -d "$git_dir/rebase-merge" ]]; then
+		branch=$(cat $git_dir/rebase-merge/head-name)
+	elif [[ -d $git_dir/rebase-merge ]]; then
 		state=":rebase -m"
-		branch="$(cat "$git_dir/rebase-merge/head-name")"
-	elif [[ -f "$git_dir/MERGE_HEAD" ]]; then
+		branch=$(cat $git_dir/rebase-merge/head-name)
+	elif [[ -f $git_dir/MERGE_HEAD ]]; then
 		state=":merge"
-		branch="$(git symbolic-ref HEAD 2>/dev/null)"
+		branch=$(git symbolic-ref HEAD 2>/dev/null)
 	else
-		[[ -f "$git_dir/BISECT_LOG" ]] && state="bisect"
-		branch="$(git symbolic-ref HEAD 2>/dev/null)" || \
-		branch="$(git describe --exact-match HEAD 2>/dev/null)" || \
-		branch="$(cut -c1-7 "$git_dir/HEAD")..."
+		[[ -f $git_dir/BISECT_LOG ]] && state="bisect"
+		branch=$(git symbolic-ref HEAD 2>/dev/null) || \
+			branch=$(git describe --exact-match HEAD 2>/dev/null) || \
+			branch=$(cut -c1-7 $git_dir/HEAD)...
 	fi
 
-	__ZSH_GIT_FULL_DIR="${git_dir:A:h}"
-	__ZSH_GIT_REPO="${__ZSH_GIT_FULL_DIR}"
+	__ZSH_GIT_FULL_DIR=${git_dir:A:h}
+	__ZSH_GIT_REPO=${__ZSH_GIT_FULL_DIR}
 
-	git_pwd="$PWD"
-	__ZSH_GIT_REPO_PATH="${git_pwd##${__ZSH_GIT_FULL_DIR}}"
+	git_pwd=$PWD
+	__ZSH_GIT_REPO_PATH=${git_pwd##${__ZSH_GIT_FULL_DIR}}
 
-	if [[ "${__ZSH_GIT_REPO_PATH}" == "${git_pwd}" ]]; then
+	if [[ ${__ZSH_GIT_REPO_PATH} == ${git_pwd} ]]; then
 		# symlinks causing problems...
 		__ZSH_GIT_REPO_PATH=""
-		while [[ "${git_pwd:A}" != "${__ZSH_GIT_FULL_DIR}" ]]; do
+		while [[ ${git_pwd:A} != ${__ZSH_GIT_FULL_DIR} ]]; do
 			__ZSH_GIT_REPO_PATH="/${git_pwd:t}${__ZSH_GIT_REPO_PATH}"
-			git_pwd="${git_pwd:h}"
-			if [[ "$git_pwd" = "/" ]]; then
+			git_pwd=${git_pwd:h}
+			if [[ $git_pwd = "/" ]]; then
 				# Failed to find root.
 				# Reset variables and avoid an infinite loop.
-				git_pwd="${__ZSH_GIT_FULL_DIR}"
-				__ZSH_GIT_REPO_PATH="${PWD##${__ZSH_GIT_FULL_DIR}}"
+				git_pwd=${__ZSH_GIT_FULL_DIR}
+				__ZSH_GIT_REPO_PATH=${PWD##${__ZSH_GIT_FULL_DIR}}
 				break
 			fi
 		done
-		__ZSH_GIT_REPO="${git_pwd}"
+		__ZSH_GIT_REPO=${git_pwd}
 	fi
 
 	__ZSH_GIT_REPO="${__ZSH_GIT_REPO/$HOME/~}"
-	__ZSH_GIT_BRANCH="${branch#refs/heads/}"
-	__ZSH_GIT_STATE="${state}"
+	__ZSH_GIT_BRANCH=${branch#refs/heads/}
+	__ZSH_GIT_STATE=${state}
 }
 
 # Make sure functions aren't duplicated in hook arrays
@@ -93,13 +93,13 @@ zsh_chpwd_update_git_vars() {
 
 precmd_functions+='git_prompt_info'
 git_prompt_info() {
-	if [[ "$__GIT_REGEN_PROMPT" ]]; then
+	if [[ $__GIT_REGEN_PROMPT ]]; then
 		git_prompt_parse
 		__GIT_REGEN_PROMPT=0
-		if [[ -n "$__ZSH_GIT_REPO" ]]; then
-			PROMPT="${__GIT_PROMPT}"
+		if [[ -n $__ZSH_GIT_REPO ]]; then
+			PROMPT=${__GIT_PROMPT}
 		else
-			PROMPT="${__GIT_ORIG_PROMPT}"
+			PROMPT=${__GIT_ORIG_PROMPT}
 		fi
 	fi
 }
@@ -115,8 +115,8 @@ typeset -xgH __GIT_REGEN_PROMPT=1
 
 typeset -xgH __GIT_PROMPT="${prc[userspec]}:%{$fg_blue%}"'${__ZSH_GIT_REPO}'"[%{$fg_red%}"'${__ZSH_GIT_BRANCH}'""'${__ZSH_GIT_STATE:+:${__ZSH_GIT_STATE}}'"%{$fg_blue%}]"'${__ZSH_GIT_REPO_PATH}'"/${prc[promptchar]} "
 
-typeset -xgH __GIT_ORIG_PROMPT="${PROMPT}"
+typeset -xgH __GIT_ORIG_PROMPT=${PROMPT}
 
 setopt prompt_subst
 
-alias cdgr='[[ -n "$__ZSH_GIT_REPO" ]] && cd ${__ZSH_GIT_REPO/\~/$HOME} || (echo "No git repo found!"; exit 1)'
+alias cdgr='[[ -n $__ZSH_GIT_REPO ]] && cd ${__ZSH_GIT_REPO/\~/$HOME} || (echo "No git repo found!"; exit 1)'
