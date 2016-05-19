@@ -72,6 +72,10 @@ git_prompt_parse() {
 	__ZSH_GIT_STATE="${state}"
 }
 
+# Make sure functions aren't duplicated in hook arrays
+preexec_functions[${preexec_functions[(i)zsh_preexec_update_git_vars]}]=()
+chpwd_functions[${chpwd_functions[(i)zsh_chpwd_update_git_vars]}]=()
+precmd_functions[${precmd_functions[(i)git_prompt_info]}]=()
 
 preexec_functions+='zsh_preexec_update_git_vars'
 zsh_preexec_update_git_vars() {
