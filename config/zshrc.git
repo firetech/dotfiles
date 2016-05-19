@@ -113,7 +113,7 @@ typeset -xgH __GIT_REGEN_PROMPT
 typeset -xgH __GIT_REGEN_PROMPT=1
 
 
-typeset -xgH __GIT_PROMPT="${prc[userspec]}:%{$fg_blue%}"'${__ZSH_GIT_REPO}'"[%{$fg_red%}"'${__ZSH_GIT_BRANCH}'""'${__ZSH_GIT_STATE:+:${__ZSH_GIT_STATE}}'"%{$fg_blue%}]"'${__ZSH_GIT_REPO_PATH}'"/${prc[promptchar]} "
+typeset -xgH __GIT_PROMPT="${prc[userspec]}:%B%F{blue}"'${__ZSH_GIT_REPO}'"[%F{red}"'${__ZSH_GIT_BRANCH}'""'${__ZSH_GIT_STATE:+:${__ZSH_GIT_STATE}}'"%F{blue}]"'${__ZSH_GIT_REPO_PATH}'"/%f%b${prc[promptchar]} "
 
 typeset -xgH __GIT_ORIG_PROMPT=${PROMPT}
 

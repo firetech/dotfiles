@@ -136,16 +136,10 @@ $(print -Pn "compinit -d $HOME/.zcompdump.%m")
 
 
 # Set prompt
-if [[ $TERM != dumb ]]; then
-    fg_green=$'\e[01;32m'
-    fg_red=$'\e[01;31m'
-    fg_blue=$'\e[01;34m'
-    fg_none=$'\e[00m'
-fi
 typeset -A prc
-prc[promptchar]="%{%(?.$fg_green.$fg_red)%}%#%{$fg_none%}"
-prc[userspec]="%{%(!.$fg_red.$fg_green)%}$USER@%m%{$fg_none%}"
-export PROMPT="${prc[userspec]}:%{$fg_blue%}%~/${prc[promptchar]} "
+prc[promptchar]="%B%(?.%F{green}.%F{red})%#%f%b"
+prc[userspec]="%B%(!.%F{red}.%F{green})%n@%m%f%b"
+export PROMPT="${prc[userspec]}:%B%F{blue}%~/%f%b${prc[promptchar]} "
 
 # Load git prompt if possible
 [[ -x =git && -f ~/.zshrc.git ]] && source ~/.zshrc.git
