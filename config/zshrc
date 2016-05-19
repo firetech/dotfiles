@@ -139,7 +139,7 @@ $(print -Pn "compinit -d $HOME/.zcompdump.%m")
 typeset -A prc
 prc[promptchar]="%B%(?.%F{green}.%F{red})%#%f%b"
 prc[userspec]="%B%(!.%F{red}.%F{green})%n@%m%f%b"
-export PROMPT="${prc[userspec]}:%B%F{blue}%~/%f%b${prc[promptchar]} "
+export PROMPT="${prc[userspec]}:%B%F{blue}%~%(1~./.)%f%b${prc[promptchar]} "
 
 # Load git prompt if possible
 [[ -x =git && -f ~/.zshrc.git ]] && source ~/.zshrc.git
