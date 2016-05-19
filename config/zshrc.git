@@ -57,10 +57,10 @@ git_prompt_parse() {
 			__ZSH_GIT_REPO_PATH="/${git_pwd:t}${__ZSH_GIT_REPO_PATH}"
 			git_pwd=${git_pwd:h}
 			if [[ $git_pwd = "/" ]]; then
-				# Failed to find root.
-				# Reset variables and avoid an infinite loop.
-				git_pwd=${__ZSH_GIT_FULL_DIR}
-				__ZSH_GIT_REPO_PATH=${PWD##${__ZSH_GIT_FULL_DIR}}
+				# Failed to find root, (symlinked) pwd is not within git repo.
+				# Include both git root and pwd in prompt
+				git_pwd="%F{black}${__ZSH_GIT_FULL_DIR}%F{blue}"
+				__ZSH_GIT_REPO_PATH="%F{black}:%F{blue}${PWD/$HOME/~}"
 				break
 			fi
 		done
@@ -108,10 +108,7 @@ typeset -xgH __ZSH_GIT_BRANCH
 typeset -xgH __ZSH_GIT_STATE
 typeset -xgH __ZSH_GIT_REPO
 typeset -xgH __ZSH_GIT_REPO_PATH
-typeset -xgH __GIT_REGEN_PROMPT
-
 typeset -xgH __GIT_REGEN_PROMPT=1
-
 
 typeset -xgH __GIT_PROMPT="${prc[userspec]}:%B%F{blue}"'${__ZSH_GIT_REPO}'"[%F{red}"'${__ZSH_GIT_BRANCH}'""'${__ZSH_GIT_STATE:+:${__ZSH_GIT_STATE}}'"%F{blue}]"'${__ZSH_GIT_REPO_PATH}'"/%f%b${prc[promptchar]} "
 
@@ -119,4 +116,4 @@ typeset -xgH __GIT_ORIG_PROMPT=${PROMPT}
 
 setopt prompt_subst
 
-alias cdgr='[[ -n $__ZSH_GIT_REPO ]] && cd ${__ZSH_GIT_REPO/\~/$HOME} || (echo "No git repo found!"; exit 1)'
+alias cdgr='[[ -n $__ZSH_GIT_REPO ]] && cd ${__ZSH_GIT_FULL_DIR} || (echo "No git repo found!"; exit 1)'
