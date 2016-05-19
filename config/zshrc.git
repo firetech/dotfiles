@@ -93,7 +93,7 @@ zsh_chpwd_update_git_vars() {
 
 precmd_functions+='git_prompt_info'
 git_prompt_info() {
-	if [[ $__GIT_REGEN_PROMPT ]]; then
+	if [[ $__GIT_REGEN_PROMPT == 1 ]]; then
 		git_prompt_parse
 		__GIT_REGEN_PROMPT=0
 		if [[ -n $__ZSH_GIT_REPO ]]; then
