@@ -19,26 +19,26 @@ git_prompt_parse() {
 
 	state=""
 	# rewritten by Thomas Ritz <thomas(at)galaxy-ritz(dot)de>
-	if test -d "$git_dir/rebase-apply"; then
-		if test -f "$git_dir/rebase-apply/rebasing"; then
+	if [[ -d "$git_dir/rebase-apply" ]]; then
+		if [[ -f "$git_dir/rebase-apply/rebasing" ]]; then
 		        state=":rebase"
-		elif test -f "$git_dir/rebase-apply/applying"; then
+		elif [[ -f "$git_dir/rebase-apply/applying" ]]; then
 		        state=":am"
 		else
 		        state=":am/rebase"
 		fi
 		branch="$(git symbolic-ref HEAD 2>/dev/null)"
-	elif test -f "$git_dir/rebase-merge/interactive"; then
+	elif [[ -f "$git_dir/rebase-merge/interactive" ]]; then
 		state=":rebase -i"
 		branch="$(cat "$git_dir/rebase-merge/head-name")"
-	elif test -d "$git_dir/rebase-merge"; then
+	elif [[ -d "$git_dir/rebase-merge" ]]; then
 		state=":rebase -m"
 		branch="$(cat "$git_dir/rebase-merge/head-name")"
-	elif test -f "$git_dir/MERGE_HEAD"; then
+	elif [[ -f "$git_dir/MERGE_HEAD" ]]; then
 		state=":merge"
 		branch="$(git symbolic-ref HEAD 2>/dev/null)"
 	else
-		test -f "$git_dir/BISECT_LOG" && state="bisect"
+		[[ -f "$git_dir/BISECT_LOG" ]] && state="bisect"
 		branch="$(git symbolic-ref HEAD 2>/dev/null)" || \
 		branch="$(git describe --exact-match HEAD 2>/dev/null)" || \
 		branch="$(cut -c1-7 "$git_dir/HEAD")..."
@@ -50,13 +50,13 @@ git_prompt_parse() {
 	git_pwd="$PWD"
 	__ZSH_GIT_REPO_PATH="${git_pwd##${__ZSH_GIT_FULL_DIR}}"
 
-	if test "${__ZSH_GIT_REPO_PATH}" == "${git_pwd}"; then
+	if [[ "${__ZSH_GIT_REPO_PATH}" == "${git_pwd}" ]]; then
 		# symlinks causing problems...
 		__ZSH_GIT_REPO_PATH=""
-		while test "${git_pwd:A}" != "${__ZSH_GIT_FULL_DIR}"; do
+		while [[ "${git_pwd:A}" != "${__ZSH_GIT_FULL_DIR}" ]]; do
 			__ZSH_GIT_REPO_PATH="/${git_pwd:t}${__ZSH_GIT_REPO_PATH}"
 			git_pwd="${git_pwd:h}"
-			if test "$git_pwd" = "/"; then
+			if [[ "$git_pwd" = "/" ]]; then
 				# Failed to find root.
 				# Reset variables and avoid an infinite loop.
 				git_pwd="${__ZSH_GIT_FULL_DIR}"
@@ -93,10 +93,10 @@ zsh_chpwd_update_git_vars() {
 
 precmd_functions+='git_prompt_info'
 git_prompt_info() {
-	if [ "$__GIT_REGEN_PROMPT" ]; then
+	if [[ "$__GIT_REGEN_PROMPT" ]]; then
 		git_prompt_parse
 		__GIT_REGEN_PROMPT=0
-		if test -n "$__ZSH_GIT_REPO"; then
+		if [[ -n "$__ZSH_GIT_REPO" ]]; then
 			PROMPT="${__GIT_PROMPT}"
 		else
 			PROMPT="${__GIT_ORIG_PROMPT}"
@@ -119,4 +119,4 @@ typeset -xgH __GIT_ORIG_PROMPT="${PROMPT}"
 
 setopt prompt_subst
 
-alias cdgr='test -n "$__ZSH_GIT_REPO" && cd ${__ZSH_GIT_REPO/\~/$HOME} || (echo "No git repo found!"; exit 1)'
+alias cdgr='[[ -n "$__ZSH_GIT_REPO" ]] && cd ${__ZSH_GIT_REPO/\~/$HOME} || (echo "No git repo found!"; exit 1)'
