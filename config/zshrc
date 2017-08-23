@@ -178,6 +178,11 @@ fi
 
 alias vim_swp_reopen='vim -p $(find . -name .\*.sw? | sed -e "s/\/\.\(.*\)\.sw.$/\/\1/g")'
 
+# The Fuck
+if [[ -x =thefuck ]]; then
+    eval $(thefuck --alias)
+fi
+
 # Functions to update dotfiles and reload ZSH config
 update_dotfiles() {
     local zshrc=$HOME/.zshrc
