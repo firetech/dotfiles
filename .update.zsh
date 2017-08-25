@@ -1,5 +1,5 @@
 #
-# Dotfiles automatic update by Joakim Andersson
+# Dotfiles automatic update by Joakim Tufvegren
 #
 # This is run automatically by ~/.zshrc once per $update_limit days or manually
 # by running update_dotfiles.
