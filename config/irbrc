@@ -4,66 +4,53 @@
 
 require 'pp'
 require 'irb/completion'
+require 'irb/ext/save-history'
 require 'rubygems'
 
 IRB.conf[:PROMPT_MODE] = :SIMPLE
-
-# Colorize to match vim syntax colors better.
-my_colors = {
-      # delimiter colors
-      :comma              => :light_blue,
-      :refers             => :light_blue,
-
-      # container colors (hash and array)
-      :open_hash          => :light_green,
-      :close_hash         => :light_green,
-      :open_array         => :light_green,
-      :close_array        => :light_green,
-
-      # object colors
-      :open_object        => :light_red,
-      :object_class       => :white,
-      :object_addr_prefix => :light_blue,
-      :object_line_prefix => :light_blue,
-      :close_object       => :light_red,
-
-      # symbol colors
-      :symbol             => :yellow,
-      :symbol_prefix      => :yellow,
-
-      # string colors
-      :open_string        => :light_red,
-      :string             => :light_purple,
-      :close_string       => :light_red,
-
-      # misc colors
-      :number             => :light_purple,
-      :keyword            => :light_purple,
-      :class              => :light_green,
-      :range              => :light_red,
-      :unknown            => :white
-}
+IRB.conf[:SAVE_HISTORY] = 500
+IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
 
 begin
-  require 'brice'
-  Brice.init do |config|
-    config.colours.opt = {
-      :colours => Brice::Colours::DEFAULT_COLOURS.merge(my_colors)
-    }
-    config.libs
-    config.history
-  end
-  IRB.conf[:PROMPT_MODE] = :BRICE_VERBOSE
+  require 'wirb'
+  # Colorize to match vim syntax colors better.
+  Wirb.schema = Wirb.schema.merge({
+      # delimiter colors
+      :comma              => [ :blue, :bright ],
+      :refers             => [ :blue, :bright ],
+
+      # container colors (hash and array)
+      :open_hash          => [ :green, :bright ],
+      :close_hash         => [ :green, :bright ],
+      :open_array         => [ :green, :bright ],
+      :close_array        => [ :green, :bright ],
+
+      # object colors
+      :open_object        => [ :red, :bright ],
+      :object_class       => [ :white ],
+      :object_addr_prefix => [ :blue, :bright ],
+      :object_line_prefix => [ :blue, :bright ],
+      :close_object       => [ :red, :bright ],
+
+      # symbol colors
+      :symbol             => [ :yellow, :bright ],
+      :symbol_prefix      => [ :yellow, :bright ],
+
+      # string colors
+      :open_string        => [ :red, :bright ],
+      :string             => [ :purple, :bright ],
+      :close_string       => [ :red, :bright ],
+
+      # misc colors
+      :number             => [ :purple, :bright ],
+      :keyword            => [ :purple, :bright ],
+      :class              => [ :green, :bright ],
+      :range              => [ :red, :bright ],
+      :unknown            => [ :white ]
+  })
+  Wirb.start
 rescue LoadError
-  begin
-    require 'wirble'
-    puts "Warning: Falling back to Wirble, some output may be wrong."
-    Wirble.init
-    Wirble::Colorize.colors.merge!(my_colors)
-    Wirble.colorize
-  rescue LoadError
-    puts "Error: Neither Brice nor Wirble found :("
-  end
+  # Ignore
 end
 
 # IRB improvements: Command history, coloring, more shell like commands cd, pwd, dir, cat
