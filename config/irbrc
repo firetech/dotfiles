@@ -38,12 +38,12 @@ begin
 
       # string colors
       :open_string        => [ :red, :bright ],
-      :string             => [ :purple, :bright ],
+      :string             => [ :magenta, :bright ],
       :close_string       => [ :red, :bright ],
 
       # misc colors
-      :number             => [ :purple, :bright ],
-      :keyword            => [ :purple, :bright ],
+      :number             => [ :magenta, :bright ],
+      :keyword            => [ :magenta, :bright ],
       :class              => [ :green, :bright ],
       :range              => [ :red, :bright ],
       :unknown            => [ :white ]
