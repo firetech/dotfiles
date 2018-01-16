@@ -150,7 +150,7 @@ if [[ -x =apt-get ]]; then
     alias atv='aptitude show'
     alias acs='apt search'
     alias acv='apt show'
-    alias acp='apt policy'
+    alias acp='apt-cache policy'
 
     alias agu='sudo apt update'
     alias agug='sudo apt upgrade'
