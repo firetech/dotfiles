@@ -12,10 +12,11 @@ set omnifunc=syntaxcomplete#Complete
 set completeopt=menuone
 " Use SQL omnicomplete without dbext by default
 let g:omni_sql_default_compl_type = 'syntax'
-" Switch to a more C friendly default config for Clang completion
-let g:ycm_global_ycm_extra_conf = '~/.vim/plugin/ycm_extra_conf.py'
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion = 1
+" Disable clang error highlighting, pairs badly with pkg-config libs...
+let g:ycm_enable_diagnostic_signs = 0
+let g:ycm_enable_diagnostic_highlighting = 0
 
 " Fix gvim background color
 if has('gui_running')
