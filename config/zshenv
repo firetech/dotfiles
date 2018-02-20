@@ -9,4 +9,7 @@ export LESS="difrR"
 
 [[ -x =vim ]] && export EDITOR="vim" || export EDITOR="vi"
 
+# Fix backwards compatibility when using screen in some 256color terminals
+[[ $TERM == "screen.xterm-256color" ]] && export TERM="screen-256color"
+
 [[ $UID == $GID ]] && umask 002 || umask 022
