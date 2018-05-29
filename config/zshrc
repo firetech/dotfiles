@@ -121,7 +121,7 @@ case $TERM in
         preexec () { print -Pn "\e]0;%n@%m: ${1[(wr)^(*=*|sudo|-*)]}\a" }
         precmd () { print -Pn "\e]0;%n@%m: %~\a" }
         ;;
-    (screen)
+    (screen*)
         preexec () { print -Pn "\ek${1[(wr)^(*=*|sudo|-*)]}\e\\" }
         precmd () { print -Pn "\ek%~\e\\" }
         ;;
