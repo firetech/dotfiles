@@ -5,7 +5,7 @@
 # Set some standard variables
 export PATH=$HOME/bin:$PATH:/usr/local/sbin:/usr/local/bin
 export PAGER==less
-export LESS="difrR"
+export LESS="diRX"
 
 [[ -x =vim ]] && export EDITOR="vim" || export EDITOR="vi"
 
