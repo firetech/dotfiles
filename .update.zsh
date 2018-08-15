@@ -85,11 +85,13 @@ cd $repo
 
 commits_ahead=$( (git log --oneline $branch..HEAD | wc -l) || \
         _fatal "Checking number of commits ahead failed." )
+commits_ahead=${commits_ahead// /}
 [[ $commits_ahead -gt 0 ]] && \
     _log_warn "Found $commits_ahead unpushed commit(s)."
 
 uncommitted_files=$( (git status --porcelain | wc -l) || \
         _fatal "Checking git file status failed." )
+uncommitted_files=${uncommitted_files// /}
 [[ $uncommitted_files -gt 0 ]] && \
     _log_warn "Found $uncommitted_files uncommitted file(s)."
 
@@ -99,6 +101,7 @@ git fetch -q || \
 
 commits_behind=$( (git log --oneline HEAD..$branch | wc -l) || \
         _fatal "Checking number of commits behind failed." )
+commits_behind=${commits_behind// /}
 
 if [[ $commits_behind -gt 0 ]]; then
     file_list_pre=$(ls config)
