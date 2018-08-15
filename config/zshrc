@@ -75,6 +75,16 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
+# Enable progress on dd if supported
+dd_bin="dd"
+if [[ -x =gdd ]]; then
+    dd_bin="gdd"
+fi
+if $dd_bin status=progress count=0 > /dev/null 2>&1; then
+    alias dd="$dd_bin status=progress"
+fi
+unset dd_bin
+
 # Enable color support of ls and grep
 if [[ $TERM != dumb ]]; then
     ls_bin="ls"
