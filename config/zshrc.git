@@ -59,7 +59,7 @@ git_prompt_parse() {
 			if [[ $git_pwd = "/" ]]; then
 				# Failed to find root, (symlinked) pwd is not within git repo.
 				# Include both git root and pwd in prompt
-				git_pwd="%F{black}${__ZSH_GIT_FULL_DIR}%F{blue}"
+				git_pwd="%F{black}${__ZSH_GIT_FULL_DIR/${HOME:A}/~}%F{blue}"
 				__ZSH_GIT_REPO_PATH="%F{black}:%F{blue}${PWD/$HOME/~}"
 				break
 			fi
