@@ -24,13 +24,14 @@ setopt noclobber               # Don't overwrite files with >
 setopt autopushd               # Make cd act like pushd
 setopt pushdminus              # Invert order for 'cd -X/+X'
 setopt pushdignoredups         # No duplicates on dirstack
+setopt append_history          # Append history file instead of overwriting it
 setopt histignorespace         # Don't add space indented lines to history
 REPORTTIME=15                  # Report usage stats for long running commands
 
 # Preserve history
-HISTSIZE=500
+HISTSIZE=2000
 HISTFILE=~/.zsh_history
-SAVEHIST=500
+SAVEHIST=2000
 
 # Use and preserve directory stack
 DIRSTACKSIZE=20
