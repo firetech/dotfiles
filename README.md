@@ -19,6 +19,11 @@ To manually update, run `update_dotfiles` in ZSH. That command will also reload 
 
 One can also make sure an automatic update check is run on the next opening of ZSH by running `update_dotfiles defer`.
 
+Local Configuration
+===================
+
+The zshrc configuration file can have a local configuration in addition to the shared one coming from this repository. This is achieved by creating a `.zshrc.local` file in your home folder.
+
 License & Copyright
 ===================
 
