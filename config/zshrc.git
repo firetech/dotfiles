@@ -38,7 +38,7 @@ git_prompt_parse() {
 		state=":merge"
 		branch=$(git symbolic-ref HEAD 2>/dev/null)
 	else
-		[[ -f $git_dir/BISECT_LOG ]] && state="bisect"
+		[[ ! -f $git_dir/BISECT_LOG ]] || state="bisect"
 		branch=$(git symbolic-ref HEAD 2>/dev/null) || \
 			branch=$(git describe --exact-match HEAD 2>/dev/null) || \
 			branch=$(cut -c1-7 $git_dir/HEAD)...

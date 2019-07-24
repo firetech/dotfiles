@@ -106,7 +106,7 @@ if [[ $TERM != dumb ]]; then
     elif [[ -x =gdircolors && -x =gls ]]; then
         eval "$(gdircolors -b ~/.dircolors)"
         ls_bin="gls"
-        [[ -x =ggrep ]] && grep_bin="ggrep"
+        [[ ! -x =ggrep ]] || grep_bin="ggrep"
     fi
 
     # Test if ls supports --color=auto
@@ -153,7 +153,7 @@ prc[userspec]="%B%(!.%F{red}.%F{green})%n@%m%f%b"
 export PROMPT="${prc[userspec]}:%B%F{blue}%~%(1~./.)%f%b${prc[promptchar]} "
 
 # Load git prompt if possible
-[[ -x =git && -f ~/.zshrc.git ]] && source ~/.zshrc.git
+[[ ! -x =git || ! -f ~/.zshrc.git ]] || source ~/.zshrc.git
 
 # System management aliases
 if [[ -x =apt-get ]]; then
@@ -182,7 +182,7 @@ if [[ -x =apt-get ]]; then
 fi
 if [[ -f /var/log/syslog ]]; then
     sudo='sudo '
-    [[ -r /var/log/syslog ]] && sudo=''
+    [[ ! -r /var/log/syslog ]] || sudo=''
     alias syslog="${sudo}tail -F /var/log/syslog"
     unset sudo
 fi
@@ -223,10 +223,10 @@ reload_zshconfig() {
 }
 
 # Local overrides/additions
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+[[ ! -f ~/.zshrc.local ]] || source ~/.zshrc.local
 
 # Clean up
 unset prc
 
 # Update and possibly reload config.
-[[ $__skip_update != 1 ]] && update_dotfiles auto
+[[ $__skip_update == 1 ]] || update_dotfiles auto
