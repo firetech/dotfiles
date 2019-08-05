@@ -1,226 +1,514 @@
-# 
-# Indentation finder, by Philippe Fremy <pfremy@freehackers.org>
+#!/usr/bin/env python
 #
-# Copyright 2002,2005 Philippe Fremy
-# Version: 1.1
+# Indentation finder, by Philippe Fremy <phil at freehackers dot org>
+# Copyright (C) 2002-2010 Philippe Fremy
+# Copyright (C) 2013-2018 Steven Myint
 #
 # This program is distributed under the BSD license. You should have received
 # a copy of the file LICENSE.txt along with this software.
-#
-# $Id: indent_finder.py,v 1.2 2002/12/01 17:36:06 philippe Exp $
-#
-# History:
-# ========
-# 
-# version 1.1:
-# - improve the heuristic by detecting indentation steps
-#
-# version 1.0:
-# - initial release
 
-import sys
-import re
-
-VERBOSE = 0
-
-help = \
-"""Usage : %s [ --separate ] [ --vim-output ] [ --verbose ] file1 file2 ... fileN
+"""Detects the indentation of files.
 
 Display indentation used in the list of files. Possible answers are (with X
 being the number of spaces used for indentation):
 space X
 tab 8
+mixed tab X space Y
 
---separate: analyse each file separately and report results as:
-file1: space X
-file2: tab 8
-
---vim-output: output suitable to use inside vim:
-set sts=0 | set tabstop=4 | set noexpandtab | set shiftwidth=4
+Mixed means that indentation style is tab at the beginning of the line (tab
+being 8 positions) and then spaces to do the indentation, unless you reach 8
+spaces which are replaced by a tab. This is the vim source file indentation
+for example. In my opinion, this is the worst possible style.
 
 """
 
-### used when it can not compute the exact value of the indentation
-default = ("space", 4 )
+from __future__ import division
 
-### Used when indentation is tab, to set tabstop
-vim_preferred_tabstop_value = 4
+import optparse
+import re
+import sys
 
 
-class IndentFinder:
-	"""
-	IndentFinder reports the indentation used in a source file. Its approach is
-	not tied to any particular language. It was tested successfully 
-	with python, C, C++ and Java code.
+__version__ = '2.0a0'
 
-	How does it work ?
 
-	It scans each line of the entry file for a space character (white space or
-	tab) repeated until a non space character is found. Such a line
-	is considered to be a properly indented line of code. Blank lines and
-	mixed indentation line are safely ignored. Lines coming after a line
-	ending in '\\' have higher chance of being not properly indented, and are
-	thus ignored too.
-	
-	An array stores the number of lines that have a specific indentation: tab,
-	number of spaces between 2 and 8. For space indentation, a line is
-	considered indented with a base of x if the number of spaces modulo x
-	yields zero. Thus, an indentation of 4 spaces increases the 2-spaces and
-	the 4-spaces indentation line count.
+INDENT_RE = re.compile('^([ \t]+)([^ \t]+)')
+MIXED_RE = re.compile('^(\t+)( +)$')
 
-	To improve the heuristics, the steps of increments in the indentation
-	give an extra bonus of 10 points. For example:
-	<4 space>some line
-	<8 space     >some line
-	is a strong hint of an indentation of 4 and gets 4 an 10 points bonus
+MAX_BYTES = 100000
 
-	At the end of the scan phase, the indentation that was used with the
-	highest number of lines is taken. For spaces, to avoid the problemes of
-	multiples like 2 and 4, the highest indentation number is preferred. A
-	lower number is chosen if it reports at least 10% more lines with this
-	indentation.
+MIN_SPACES = 1
+MAX_SPACES = 8
 
-	If IndentFinder ever reports wrong indentation, send me immediately a
-	mail, if possible with the offending file.
-	"""
+assert 0 < MIN_SPACES < MAX_SPACES
 
-	def __init__(self):
-		self.clear()
+# Optionally used to fall back to default if pre-indentation line is not found.
+# This is not used by the main line detection algorithm.
+LANGUAGE_PRE_INDENTATION = {
+    '.C': '{',
+    '.c': '{',
+    '.cc': '{',
+    '.cpp': '{',
+    '.h': '{',
+    '.hpp': '{',
+    '.py': ':',
+}
 
-	def parse_file_list( self, file_list ):
-		for fname in file_list:
-			self.parse_file( fname )
+BLACKLISTED_EXTENSIONS = ['.rst']
 
-	def parse_file( self, fname ):
-		f = open( fname )
-		l = f.readline()
-		while( l ):
-			self.analyse_line( l )
-			l = f.readline()
-		f.close()
 
-	def clear( self ):
-		self.spaces = [ 0, 0, 0, 0, 0, 0, 0 ] # 2-8 entries
-		self.tab = 0
-		self.last_space_indent = 0
-		self.nb_lines = 0
-		self.nb_skipped_lines = 0
-		self.indent_re  = re.compile( r"^((\s)\2*)\S" )
-		self.skip_line = 0
+class IndentType(object):
 
-	def analyse_line( self, line ):
-		self.nb_lines += 1
-		skip_line = self.skip_line
-		if len(line) > 2 and line[-2] == "\\": self.skip_line = 1
-		else: self.skip_line = 0
-		if skip_line: 
-			self.nb_skipped_lines += 1
-			return
+    space = 'space'
+    tab = 'tab'
+    mixed = 'mixed'
 
-		mo = self.indent_re.match( line )
-		if mo:
-			if mo.group(2) == '\t':
-				self.tab += 1
-				self.last_space_indent = 0
-				return
-			nb_space = len(mo.group(1))
-			for i in range( 2, 9 ):
-				if (nb_space % i) == 0:
-					self.spaces[i - 2] += 1
-				if self.last_space_indent and (nb_space - self.last_space_indent) == i:	
-					# bonus when we detect that a new indentation level was reached
-					self.spaces[i - 2] += 10
-			self.last_space_indent = nb_space
-			return
-		else:
-			self.nb_skipped_lines += 1
 
-	def results( self ):
-		if VERBOSE:
-			print "Nb of scanned lines : %d" % self.nb_lines
-			print "Nb of ignored lines : %d" % self.nb_skipped_lines
-			print "Nb of lines with tab indentation: %d" % self.tab
-			for i in range(2,9):
-				print "Nb of points for space %d indentation: %d" % (i, self.spaces[i-2] )
+def parse_file(filename,
+               default_tab_width,
+               default_result):
+    """Return result of indentation analysis.
 
-		if self.tab > max( self.spaces ):
-			if VERBOSE: print "Result = tab"
-			return ("tab", 8)
-		
-		nb = 0
-		idx = -1
-		for i in range(8,1,-1):
-			if self.spaces[ i - 2 ] > int( nb * 1.1 ) : # give a 10% threshold
-				idx = i
-				nb = self.spaces[ idx - 2 ] 
+    Interpret with results_to_string() or vim_output().
 
-		if idx == -1: # no lines
-			raise Exception, "<Empty file>"
+    """
+    return _parse_file(IndentFinder(),
+                       filename=filename,
+                       default_tab_width=default_tab_width,
+                       default_result=default_result)
 
-		if VERBOSE: print "Result = space, %d" % idx
-		return ("space", idx)
 
-	def __str__ (self):
-		try:
-			return "%s %d" % self.results()
-		except Exception:
-			return "<Empty file>"
+def _parse_file(finder, filename, default_tab_width, default_result):
+    if filename.lower() == 'makefile' or filename.endswith('.mk'):
+        return (IndentType.tab, default_tab_width)
 
-	def vim_output( self ):
-		try:
-			ts, n = self.results()
-		except Exception:
-			return '" Empty file'
-		# spaces: 
-		# 	=> set sts to the number of spaces
-		#   => set tabstop to the number of spaces
-		#   => expand tabs to spaces
-		#   => set shiftwidth to the number of spaces
-		if ts == "space":
-			return "set sts=%d | set tabstop=%d | set expandtab | set shiftwidth=%d" % (n,n,n)
+    for extension in BLACKLISTED_EXTENSIONS:
+        if filename.endswith(extension):
+            return default_result
 
-		tab_width=4
-		# tab:
-		#   => set sts to 0
-		#   => set tabstop to preferred value
-		#   => set expandtab to false
-		#   => set shiftwidth to tabstop
-		#   tabstop should not be touched.
-		if ts == "tab":
-			return "set sts=0 | set tabstop=%d | set noexpandtab | set shiftwidth=%d" % (vim_preferred_tabstop_value, tab_width)
+    required_ending = None
+    for extension, ending in LANGUAGE_PRE_INDENTATION.items():
+        if filename.endswith(extension):
+            required_ending = ending
+
+    finder.clear()
+    found_required_ending = False
+    for line in forcefully_read_lines(filename, MAX_BYTES):
+        finder.analyse_line(line)
+
+        if required_ending and line.rstrip().endswith(required_ending):
+            found_required_ending = True
+
+    if required_ending and not found_required_ending:
+        return default_result
+
+    return results(finder.lines,
+                   default_tab_width=default_tab_width,
+                   default_result=default_result)
+
+
+class LineType(object):
+
+    no_indent = 'no_indent'
+    space_only = 'space_only'
+    tab_only = 'tab_only'
+    mixed = 'mixed'
+    begin_space = 'begin_space'
+
+
+class IndentFinder(object):
+
+    r"""IndentFinder reports the indentation used in a source file.
+
+    Its approach is not tied to any particular language. It was tested
+    successfully with python, C, C++ and Java code.
+
+    How does it work?
+
+    It scans each line of the entry file for a space character (white space or
+    tab) repeated until a non space character is found. Such a line is
+    considered to be a properly indented line of code. Blank lines and comments
+    line (starting with # or /* or *) are ignored. Lines coming after a line
+    ending in '\' have higher chance of being not properly indented, and are
+    thus ignored too.
+
+    Only the increment in indentation are fed in. Dedentation or maintaining
+    the same indentation is not taken into account when analysing a file.
+    Increment in indentation from zero indentation to some indentation is also
+    ignored because it's wrong in many cases (header file with many structures
+    for example, do not always obey the indentation of the rest of the code).
+
+    Each line is analysed as:
+    - space_only: indentation of more than MAX_SPACES space
+    - tab_only: indentation of tab only
+    - mixed: indentation of tab, then less than MAX_SPACES spaces
+    - begin_space: indentation of less than MAX_SPACES space, that could be
+      either a mixed indentation or a pure space indentation.
+    - non-significant
+
+    Then two consecutive significant lines are then considered. The only valid
+    combinations are:
+    - (no_indent, begin_space)    => space or mixed
+    - (no_indent, tab)            => tab
+    - (begin_space, begin_space)  => space or mixed
+    - (begin_space, space_only)   => space
+    - (space_only, space_only)    => space
+    - (tab_only, tab_only)        => tab
+    - (tab_only, mixed)           => mixed
+    - (mixed, tab_only)           => mixed
+
+    The increment in number of spaces is then recorded.
+
+    At the end, the number of lines with space indentation, mixed space and tab
+    indentation are compared and a decision is made.
+
+    If no decision can be made, None is returned.
+
+    If IndentFinder ever reports wrong indentation, send me immediately a
+    mail, if possible with the offending file.
+
+    """
+
+    def __init__(self):
+        self.skip_next_line = False
+        self.previous_line_info = None
+        self.lines = {}
+
+        self.clear()
+
+    def clear(self):
+        self.lines = {}
+        for i in range(MIN_SPACES, MAX_SPACES + 1):
+            self.lines['space%d' % i] = 0
+        for i in range(MIN_SPACES, MAX_SPACES + 1):
+            self.lines['mixed%d' % i] = 0
+        self.lines['tab'] = 0
+
+        self.skip_next_line = False
+        self.previous_line_info = None
+
+    def analyse_line(self, line):
+        if line[-1:] == '\n':
+            line = line[:-1]
+
+        skip_current_line = self.skip_next_line
+        self.skip_next_line = False
+        if line[-1:] == '\\':
+            self.skip_next_line = True
+
+        if skip_current_line:
+            return
+
+        ret = self.analyse_line_indentation(line)
+        return ret
+
+    def analyse_line_indentation(self, line):
+        previous_line_info = self.previous_line_info
+        current_line_info = analyse_line_type(line)
+        self.previous_line_info = current_line_info
+
+        if current_line_info is None or previous_line_info is None:
+            return
+
+        t = (previous_line_info[0], current_line_info[0])
+        if (
+            t == (LineType.tab_only, LineType.tab_only) or
+            t == (LineType.no_indent, LineType.tab_only)
+        ):
+            if len(current_line_info[1]) - len(previous_line_info[1]) == 1:
+                self.lines['tab'] += 1
+                return IndentType.tab
+
+        elif (t == (LineType.space_only, LineType.space_only) or
+              t == (LineType.begin_space, LineType.space_only) or
+              t == (LineType.no_indent, LineType.space_only)):
+            nb_space = len(current_line_info[1]) - len(previous_line_info[1])
+            if MIN_SPACES <= nb_space <= MAX_SPACES:
+                key = 'space%d' % nb_space
+                self.lines[key] += 1
+                return key
+
+        elif (t == (LineType.begin_space, LineType.begin_space) or
+              t == (LineType.no_indent, LineType.begin_space)):
+            nb_space = len(current_line_info[1]) - len(previous_line_info[1])
+            if MIN_SPACES <= nb_space <= MAX_SPACES:
+                key1 = 'space%d' % nb_space
+                key2 = 'mixed%d' % nb_space
+                self.lines[key1] += 1
+                self.lines[key2] += 1
+                return key1
+
+        elif t == (LineType.begin_space, LineType.tab_only):
+            # We assume that mixed indentation used MAX_SPACES characters tabs.
+            if len(current_line_info[1]) == 1:
+                # More than one tab on the line --> not mixed mode!
+                nb_space = (
+                    len(current_line_info[1]) *
+                    MAX_SPACES - len(previous_line_info[1])
+                )
+                if MIN_SPACES <= nb_space <= MAX_SPACES:
+                    key = 'mixed%d' % nb_space
+                    self.lines[key] += 1
+                    return key
+
+        elif t == (LineType.tab_only, LineType.mixed):
+            (_, tab_part, space_part) = current_line_info
+            if len(previous_line_info[1]) == len(tab_part):
+                nb_space = len(space_part)
+                if MIN_SPACES <= nb_space <= MAX_SPACES:
+                    key = 'mixed%d' % nb_space
+                    self.lines[key] += 1
+                    return key
+
+        elif t == (LineType.mixed, LineType.tab_only):
+            (_, tab_part, space_part) = previous_line_info
+            if len(tab_part) + 1 == len(current_line_info[1]):
+                nb_space = MAX_SPACES - len(space_part)
+                if MIN_SPACES <= nb_space <= MAX_SPACES:
+                    key = 'mixed%d' % nb_space
+                    self.lines[key] += 1
+                    return key
+        else:
+            pass
+
+        return None
+
+
+def results(lines,
+            default_tab_width,
+            default_result):
+    """Return analysis results.
+
+    1. Space indented file
+       - lines indented with less than MAX_SPACES space will fill mixed and
+         space array
+       - lines indented with MAX_SPACES space or more will fill only the space
+         array
+       - almost no lines indented with tab
+
+    => more lines with space than lines with mixed
+    => more a lot more lines with space than tab
+
+    2. Tab indented file
+       - most lines will be tab only
+       - very few lines as mixed
+       - very few lines as space only
+
+    => a lot more lines with tab than lines with mixed
+    => a lot more lines with tab than lines with space
+
+    3. Mixed tab/space indented file
+       - some lines are tab-only (lines with exactly MAX_SPACES step
+         indentation)
+       - some lines are space only (less than MAX_SPACES space)
+       - all other lines are mixed
+
+    If mixed is tab + 2 space indentation:
+        - a lot more lines with mixed than with tab
+    If mixed is tab + 4 space indentation
+        - as many lines with mixed than with tab
+
+    If no lines exceed MAX_SPACES space, there will be only lines with space
+    and tab but no lines with mixed. Impossible to detect mixed indentation
+    in this case, the file looks like it's actually indented as space only
+    and will be detected so.
+
+    => same or more lines with mixed than lines with tab only
+    => same or more lines with mixed than lines with space only
+
+    """
+    max_line_space = max(
+        [lines['space%d' % i] for i in range(MIN_SPACES, MAX_SPACES + 1)])
+    max_line_mixed = max(
+        [lines['mixed%d' % i] for i in range(MIN_SPACES, MAX_SPACES + 1)])
+    max_line_tab = lines['tab']
+
+    result = None
+
+    # Detect space indented file.
+    if max_line_space >= max_line_mixed and max_line_space > max_line_tab:
+        nb = 0
+        indent_value = None
+        for i in range(MAX_SPACES, MIN_SPACES - 1, -1):
+            # Give a 10% threshold.
+            if lines['space%d' % i] > int(nb * 1.1):
+                indent_value = i
+                nb = lines['space%d' % indent_value]
+
+        if indent_value is not None:
+            result = (IndentType.space, indent_value)
+
+    # Detect tab files.
+    elif max_line_tab > max_line_mixed and max_line_tab > max_line_space:
+        result = (IndentType.tab, default_tab_width)
+
+    # Detect mixed files.
+    elif (max_line_mixed >= max_line_tab and
+          max_line_mixed > max_line_space):
+        nb = 0
+        indent_value = None
+        for i in range(MAX_SPACES, 1, -1):
+            # Give a 10% threshold.
+            if lines['mixed%d' % i] > int(nb * 1.1):
+                indent_value = i
+                nb = lines['mixed%d' % indent_value]
+
+        if indent_value is not None:
+            result = (IndentType.mixed, (MAX_SPACES, indent_value))
+
+    return result or default_result
+
+
+def results_to_string(result_data):
+    (indent_type, indent_value) = result_data
+    if indent_type != IndentType.mixed:
+        return '%s %d' % (indent_type, indent_value)
+    else:
+        (tab, space) = indent_value
+        return '%s tab %d space %d' % (indent_type, tab, space)
+
+
+def vim_output(result_data, default_tab_width):
+    (indent_type, n) = result_data
+    if indent_type == IndentType.space:
+        return ('set softtabstop=%d | set tabstop=%d | set expandtab | '
+                'set shiftwidth=%d " (%s %d)' % (n, n, n, indent_type, n))
+    elif indent_type == IndentType.tab:
+        return ('set softtabstop=0 | set tabstop=%d | set noexpandtab | '
+                'set shiftwidth=%d " (%s)' %
+                (default_tab_width, default_tab_width, indent_type))
+    else:
+        assert indent_type == IndentType.mixed
+
+        (tab_indent, space_indent) = n
+        return ('set softtabstop=0 | set tabstop=%d | set noexpandtab | '
+                'set shiftwidth=%d " (%s %d)' %
+                (tab_indent, space_indent, indent_type, space_indent))
+
+
+def forcefully_read_lines(filename, size):
+    """Return lines from file.
+
+    Ignore UnicodeDecodeErrors.
+
+    """
+    input_file = open(filename, mode='rb')
+    try:
+        return input_file.read(size).decode('utf-8', 'replace').splitlines()
+    finally:
+        input_file.close()
+    return []
+
+
+def analyse_line_type(line):
+    """Analyse the type of line.
+
+    Return (LineType, <indentation part of the line>).
+
+    The function will reject improperly formatted lines (mixture of tab
+    and space for example) and comment lines.
+
+    """
+    mixed_mode = False
+    tab_part = ''
+    space_part = ''
+
+    if line and line[0] != ' ' and line[0] != '\t':
+        return (LineType.no_indent, '')
+
+    mo = INDENT_RE.match(line)
+    if not mo:
+        return None
+
+    indent_part = mo.group(1)
+    text_part = mo.group(2)
+
+    if text_part[0] == '*':
+        # Continuation of a C/C++ comment, unlikely to be indented
+        # correctly.
+        return None
+
+    if text_part[0:2] == '/*' or text_part[0] == '#':
+        # Python, C/C++ comment, might not be indented correctly.
+        return None
+
+    if '\t' in indent_part and ' ' in indent_part:
+        # Mixed mode.
+        mo = MIXED_RE.match(indent_part)
+        if not mo:
+            # Line is not composed of '\t\t\t    ', ignore it.
+            return None
+        mixed_mode = True
+        tab_part = mo.group(1)
+        space_part = mo.group(2)
+
+    if mixed_mode:
+        if len(space_part) >= MAX_SPACES:
+            # This is not mixed mode, this is garbage!
+            return None
+        return (LineType.mixed, tab_part, space_part)
+
+    if '\t' in indent_part:
+        return (LineType.tab_only, indent_part)
+
+    assert ' ' in indent_part
+
+    if len(indent_part) < MAX_SPACES:
+        # This could be mixed mode too.
+        return (LineType.begin_space, indent_part)
+    else:
+        # This is really a line indented with spaces.
+        return (LineType.space_only, indent_part)
+
 
 def main():
-	global VERBOSE 
+    parser = optparse.OptionParser(
+        version='indent-finder %s' % (__version__,))
 
-	SEPARATE = 0
-	VIM_OUTPUT = 0
-	VERBOSE = 0
+    parser.add_option('--vim-output', action='store_true',
+                      help='output suitable to use inside vim')
+    parser.add_option('--default-tab-width', type=int,
+                      default=8,
+                      help='default tab width (%default)')
+    parser.add_option('--default-spaces', type=int,
+                      default=4,
+                      help='default indentation width (%default)')
+    parser.add_option('--default-to-tabs', action='store_true',
+                      help='default to tabs')
 
-	fi = IndentFinder()
-	file_list = []
-	for opt in sys.argv[1:]:
-		if opt == "--separate": SEPARATE = 1
-		elif opt == "--vim-output": VIM_OUTPUT = 1
-		elif opt == "--verbose": VERBOSE = 1
-		elif opt[0] == "-": 
-			print help % sys.argv[0]
-			return
-		else:
-			file_list.append( opt )
+    (options, args) = parser.parse_args()
 
-	if SEPARATE:
-		for fname in file_list:
-			fi.clear()
-			fi.parse_file( fname )
-			print "%s : %s" % (fname, str(fi))
-		return
+    if options.default_to_tabs:
+        default_result = (IndentType.tab, options.default_tab_width)
+    else:
+        default_result = (IndentType.space, options.default_spaces)
 
-	fi.parse_file_list( file_list )
-	if VIM_OUTPUT:
-		print fi.vim_output()
-	else:
-		print str(fi)
+    for filename in args:
+        try:
+            result_data = parse_file(
+                filename,
+                default_tab_width=options.default_tab_width,
+                default_result=default_result)
+
+            if options.vim_output:
+                output = vim_output(
+                    result_data,
+                    default_tab_width=options.default_tab_width)
+            else:
+                output = results_to_string(result_data) + '\n'
+
+            if len(args) > 1:
+                output = filename + ' : ' + output.rstrip() + '\n'
+
+            sys.stdout.write(output)
+        except IOError:
+            # Only print error message in non-Vim mode. Otherwise, we will be
+            # passing garbage to Vim.
+            if not options.vim_output:
+                sys.stderr.write('%s\n' % (sys.exc_info()[1],))
+
+                return 1
 
 
-if __name__ == "__main__":
-	main()
+if __name__ == '__main__':
+    sys.exit(main())
