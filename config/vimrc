@@ -17,6 +17,10 @@ set ruler
 " Enable syntax highlightning
 syntax on
 
+" Removes the possbility to execute code from the opened file when it is
+" opened in vim. This might be a security risk
+set nomodeline
+
 " ------ Omni-completion and youcompleteme ------
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
