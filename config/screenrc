@@ -12,8 +12,7 @@ bindkey "^[[1;5C" next  # change window with ctrl-right
 bindkey "^[[C" next  # PuTTY...
 
 termcapinfo xterm*|Eterm|mlterm "hs:ts=\E]0;:fs=\007:ds=\E]0;screen\007"
-hardstatus off
-hardstatus string "$USER@%H%?: %t%?"
+hardstatus ignore
 caption always "%{= wr}[%{k}%H%{r}]%=%{k} %?%-Lw%?%{kr}[%{w}%n*%f %t%? (%h)%?%? %{r}(%{w}%u%{r})%?%{r}]%{wk}%?%+Lw%? %=%{r}[%{k}%c%{r}]"
 
 defscrollback 2000
