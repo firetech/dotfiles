@@ -21,6 +21,11 @@ syntax on
 " opened in vim. This might be a security risk
 set nomodeline
 
+" Fix gvim background color
+if has('gui_running')
+  highlight Normal guifg=white guibg=black
+endif
+
 " ------ Omni-completion and youcompleteme ------
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
@@ -32,11 +37,6 @@ let g:ycm_autoclose_preview_window_after_insertion = 1
 " Disable clang error highlighting, pairs badly with pkg-config libs...
 let g:ycm_enable_diagnostic_signs = 0
 let g:ycm_enable_diagnostic_highlighting = 0
-
-" Fix gvim background color
-if has('gui_running')
-  highlight Normal guifg=white guibg=black
-endif
 
 " ------ Highlight trailing whitespace and space before tab ------
 " Only do this part when compiled with support for autocommands
