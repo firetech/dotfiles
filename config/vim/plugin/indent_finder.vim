@@ -11,6 +11,7 @@ augroup IndentFinder
     let s:default_spaces_option = '--default-spaces=' . &l:shiftwidth
 
     autocmd BufRead * let b:indent_finder_result = system(
+        \ 'test -x "$(which python)" && ' .
         \ fnamemodify(expand('<sfile>'), ':p:h') .
         \ '/indent_finder.py --vim-output ' .
         \ s:default_tab_width_option . ' ' .
