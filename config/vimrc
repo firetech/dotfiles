@@ -9,7 +9,7 @@ set background=dark
 set ignorecase smartcase
 
 " Tabsettings
-set tabstop=4 smartindent backspace=2 shiftwidth=4
+set tabstop=2 smartindent backspace=2 shiftwidth=2 expandtab
 
 " Enable ruler
 set ruler
@@ -53,15 +53,15 @@ endif
 
 " ------ Add command to fix trailing whitespace ------
 function! <SID>StripTrailingWhitespace()
-    " Preparation: save last search, and cursor position.
-    let _s=@/
-    let l = line(".")
-    let c = col(".")
-    " Do the business:
-    %s/\s\+$//e
-    " Clean up: restore previous search history, and cursor position
-    let @/=_s
-    call cursor(l, c)
+  " Preparation: save last search, and cursor position.
+  let _s=@/
+  let l = line(".")
+  let c = col(".")
+  " Do the business:
+  %s/\s\+$//e
+  " Clean up: restore previous search history, and cursor position
+  let @/=_s
+  call cursor(l, c)
 endfunction
 command StripTWS call <SID>StripTrailingWhitespace()
 
