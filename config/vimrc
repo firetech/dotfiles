@@ -10,6 +10,9 @@ set ignorecase smartcase
 
 " Tabsettings
 set tabstop=2 smartindent backspace=2 shiftwidth=2 expandtab
+let g:yaifa_tabstop = 2
+let g:yaifa_shiftwidth = 2
+let g:yaifa_expandtab = 2
 
 " Enable ruler
 set ruler
