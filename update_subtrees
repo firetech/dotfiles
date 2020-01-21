@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd $(dirname $(realpath $0))
+
+git subtree pull --prefix=config/vim/pack/yaifa/start/yaifa https://github.com/Raimondi/yaifa.git master --squash
