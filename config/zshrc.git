@@ -5,6 +5,11 @@
 # -- Joakim Tufvegren
 #
 
+# Add .gitignore.dotfiles to git's global include path if not already there.
+git config --get-all include.path | grep -q .gitconfig.dotfiles || {
+	git config --global --add include.path .gitconfig.dotfiles
+}
+
 typeset -ga preexec_functions
 typeset -ga precmd_functions
 typeset -ga chpwd_functions
@@ -21,11 +26,11 @@ git_prompt_parse() {
 	# rewritten by Thomas Ritz <thomas(at)galaxy-ritz(dot)de>
 	if [[ -d $git_dir/rebase-apply ]]; then
 		if [[ -f $git_dir/rebase-apply/rebasing ]]; then
-		        state=":rebase"
+			state=":rebase"
 		elif [[ -f $git_dir/rebase-apply/applying ]]; then
-		        state=":am"
+			state=":am"
 		else
-		        state=":am/rebase"
+			state=":am/rebase"
 		fi
 		branch=$(git symbolic-ref HEAD 2>/dev/null)
 	elif [[ -f $git_dir/rebase-merge/interactive ]]; then

@@ -1,0 +1,19 @@
+[color]
+	ui = auto
+[rebase]
+	autoSquash = true
+[alias]
+	br = branch
+	ci = commit
+	co = checkout
+	s = status
+	d = diff
+	p = push
+	cp = cherry-pick
+	l = log
+	empty = hash-object -t tree /dev/null
+	mff = !sh -c 'exec git merge origin/$0'
+	m = !sh -c 'exec git merge --no-ff origin/$0'
+	mt = mergetool
+	unpushed = log --branches --not --remotes
+	sha1 = rev-parse HEAD
