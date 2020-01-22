@@ -4,8 +4,14 @@
 	autoSquash = true
 [alias]
 	br = branch
+	ci = commit
 	co = checkout
+	cof = !git checkout master && git fetch && git checkout $1 && :
+	cob = !git checkout master && git fetch && git checkout -b $1 && :
 	cp = cherry-pick
 	m = !sh -c 'exec git merge --no-ff origin/$0'
-	unpushed = log --branches --not --remotes
 	sha1 = rev-parse HEAD
+	st = status
+	unpushed = log --branches --not --remotes
+[pull]
+	rebase = merges
