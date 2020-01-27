@@ -3,11 +3,12 @@
 [rebase]
 	autoSquash = true
 [alias]
+	ap = add -p
 	br = branch
 	ci = commit
 	co = checkout
-	cof = !git checkout master && git fetch && git checkout $1 && :
-	cob = !git checkout master && git fetch && git checkout -b $1 && :
+	cof = !git fetch && git checkout
+	cob = !git fetch && git checkout -b $1 origin/master && :
 	cp = cherry-pick
 	m = !git merge --no-ff origin/$1 && :
 	sha1 = rev-parse HEAD
