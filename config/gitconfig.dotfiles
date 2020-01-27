@@ -9,7 +9,7 @@
 	cof = !git checkout master && git fetch && git checkout $1 && :
 	cob = !git checkout master && git fetch && git checkout -b $1 && :
 	cp = cherry-pick
-	m = !sh -c 'exec git merge --no-ff origin/$0'
+	m = !git merge --no-ff origin/$1 && :
 	sha1 = rev-parse HEAD
 	st = status
 	unpushed = log --branches --not --remotes
