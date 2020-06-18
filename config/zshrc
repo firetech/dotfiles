@@ -93,13 +93,13 @@ if [[ $TERM != dumb ]]; then
     grep_bin="grep"
     if [[ -x =dircolors ]]; then
         # Support for systems where GNU ls is placed elsewhere
-        if [[ -x =dirname ]]; then
-            better_ls_bin="$(dirname =dircolors)/ls"
-            if [[ -x "$better_ls_bin" ]]; then
-                ls_bin="$better_ls_bin"
-            fi
-            unset better_ls_bin
+        dircolors_path==dircolors
+        better_ls_bin="${dircolors_path:h}/ls"
+        unset dircolors_path
+        if [[ -x "$better_ls_bin" ]]; then
+            ls_bin="$better_ls_bin"
         fi
+        unset better_ls_bin
 
         eval "$(dircolors -b ~/.dircolors)"
 
