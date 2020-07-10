@@ -29,6 +29,9 @@ if has('gui_running')
   highlight Normal guifg=white guibg=black
 endif
 
+" Nice listchars (used with :set list)
+set listchars=tab:·\ ,eol:¬,trail:×
+
 " ------ Omni-completion and youcompleteme ------
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
