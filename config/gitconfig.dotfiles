@@ -15,5 +15,6 @@
 	st = status
 	unpushed = log --branches --not --remotes
 	pu = ![ -n $(git config "branch.$(git symbolic-ref --short HEAD).merge") ] && git push -u origin $(git symbolic-ref --short HEAD) || git push
+	ph = pu
 [pull]
 	rebase = merges
