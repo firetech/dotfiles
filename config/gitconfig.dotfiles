@@ -14,7 +14,7 @@
 	sha1 = rev-parse HEAD
 	st = status
 	unpushed = log --branches --not --remotes
-	ps = "!f() { if [ -n $(git config \"branch.$(git symbolic-ref --short HEAD).merge\") ]; then; git push -u ${1:-origin} \"$(git symbolic-ref --short HEAD)\"; else; git push; fi; }; f"
+	ps = "!f() { if [ -z $(git config \"branch.$(git symbolic-ref --short HEAD).merge\") ]; then git push -u ${1:-origin} \"$(git symbolic-ref --short HEAD)\"; else git push; fi; }; f"
 	psr = "!f() { local upstream=$(git config \"branch.$(git symbolic-ref --short HEAD).merge\"); upstream=${upstream:-$(git symbolic-ref HEAD)}; local dest=${upstream/refs\\/heads\\//refs\\/for\\/}; local params=; [ -z \"$2\" ] || params=\"%$2\"; git push ${1:-origin} HEAD:$dest$params; }; f"
 	pl = pull
 [pull]
