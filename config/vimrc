@@ -26,7 +26,7 @@ set nomodeline
 
 " Fix gvim background color
 if has('gui_running')
-  highlight Normal guifg=white guibg=black
+  highlight Normal guifg=#fdfdfd guibg=#000000
 endif
 
 " Nice listchars (used with :set list)
@@ -75,8 +75,16 @@ command StripTWS call <SID>StripTrailingWhitespace()
 command SudoWrite %!sudo tee > /dev/null %
 cabbrev w!! <c-r>=(getcmdpos()==1 && getcmdtype()==':' ? 'SudoWrite' : 'w!!')<CR>
 
+" ------ Disable smartindent/autoindent for git commit messages ------
 " Only do this part when compiled with support for autocommands
 if has("autocmd")
-  " Disable smartindent/autoindent for git commit messages
   autocmd FileType gitcommit setlocal noautoindent nosmartindent
+endif
+
+" ------ Configure RainbowParentheses ------
+let g:rainbow#max_level = 32
+let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+" Only do this part when compiled with support for autocommands
+if has("autocmd")
+  autocmd FileType * RainbowParentheses
 endif

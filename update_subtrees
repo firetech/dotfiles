@@ -4,3 +4,4 @@ cd $(dirname $(realpath $0))
 
 git subtree pull --prefix=config/vim/pack/external/start/yaifa https://github.com/Raimondi/yaifa.git master --squash
 git subtree pull --prefix=config/vim/pack/external/start/vim-vue https://github.com/posva/vim-vue.git master --squash
+git subtree pull --prefix=config/vim/pack/external/start/rainbow_parentheses https://github.com/junegunn/rainbow_parentheses.vim master --squash
