@@ -72,6 +72,7 @@ alias l='ls'
 alias ll='ls -l'
 alias la='ls -la'
 alias vim='vim -p'
+alias view='view -p'
 # I've made mistakes too many times...
 alias rm='rm -i'
 alias cp='cp -i'
