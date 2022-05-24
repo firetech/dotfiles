@@ -1,0 +1,4 @@
+source ~/.screenrc
+
+bindkey "^[[A" # Unbind up arrow
+bindkey "^[[B" # Unbind down arrow

@@ -55,14 +55,29 @@ TRAPEXIT() {
 # If $EDITOR begins with vi, ZSH goes into vi mode, and that's a bit too nerdy
 bindkey -e
 
-# Make Home, End and Delete work as expected
+# Make Home & End work as expected
 bindkey '\eOH' beginning-of-line
 bindkey '\e[1~' beginning-of-line
 bindkey '\e[H' beginning-of-line
 bindkey '\eOF' end-of-line
 bindkey '\e[4~' end-of-line
 bindkey '\e[F' end-of-line
+
+# Fix Delete and Ctrl+H
 bindkey '\e[3~' delete-char
+bindkey '^H' backward-delete-word
+
+# Ctrl+Left/Right for prev/next word
+[[ -z $terminfo[kLFT5] ]] || bindkey $terminfo[kLFT5] backward-word
+[[ -z $terminfo[kRIT5] ]] || bindkey $terminfo[kRIT5] forward-word
+# These are for PuTTY, but the Linux text console uses the same escape code
+# for Left/Right without any modifiers...
+[[ $terminfo[kcub1] == "[D" ]] || bindkey '\e[D' backward-word
+[[ $terminfo[kcuf1] == "[C" ]] || bindkey '\e[C' forward-word
+
+# Make Alt+Up/Down use quick search
+[[ -z $terminfo[kUP3] ]] || bindkey $terminfo[kUP3] history-beginning-search-backward
+[[ -z $terminfo[kDN3] ]] || bindkey $terminfo[kDN3] history-beginning-search-forward
 
 # Some handy aliases
 alias ls="ls -F"
@@ -126,6 +141,11 @@ if [[ $TERM != dumb ]]; then
     fi
 
     unset ls_bin grep_bin
+fi
+
+# Use other screenrc if $terminfo says unmodified arrow keys are incompatible
+if [[ -z $SCREENRC && ($terminfo[kcuu1] == "[A" || $terminfo[kcud1] == "[B") ]]; then
+    export SCREENRC=$HOME/.screenrc.compat
 fi
 
 # Set terminal title
