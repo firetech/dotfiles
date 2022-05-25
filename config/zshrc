@@ -78,6 +78,10 @@ bindkey '^H' backward-delete-word
 # Make Alt+Up/Down use quick search
 [[ -z $terminfo[kUP3] ]] || bindkey $terminfo[kUP3] history-beginning-search-backward
 [[ -z $terminfo[kDN3] ]] || bindkey $terminfo[kDN3] history-beginning-search-forward
+# PuTTY being special again (although, to be fair, this is how many Alt+___
+# escape codes work)...
+[[ -z $terminfo[kcuu1] ]] || bindkey "\e${terminfo[kcuu1]}" history-beginning-search-backward
+[[ -z $terminfo[kcud1] ]] || bindkey "\e${terminfo[kcud1]}" history-beginning-search-forward
 
 # Finally, make sure the terminal is in application mode, when zle is
 # active. Only then are the values from $terminfo valid.
