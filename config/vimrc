@@ -88,3 +88,12 @@ let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 if has("autocmd")
   autocmd FileType * RainbowParentheses
 endif
+
+" ------ Add g<Tab> shortcut to quickly change to last active tab ------
+if !exists('g:Lasttab')
+  let g:Lasttab = 1
+  let g:Lasttab_backup = 1
+endif
+autocmd! TabLeave * let g:Lasttab_backup = g:Lasttab | let g:Lasttab = tabpagenr()
+autocmd! TabClosed * let g:Lasttab = g:Lasttab_backup
+nmap <silent> g<Tab> :exe "tabn " . g:Lasttab<cr>
