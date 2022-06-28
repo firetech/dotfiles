@@ -9,7 +9,18 @@ export LESS="diRX"
 
 [[ -x =vim ]] && export EDITOR="vim" || export EDITOR="vi"
 
-# Fix backwards compatibility when using screen in some 256color terminals
-[[ $TERM == "screen.xterm-256color" ]] && export TERM="screen-256color"
+# Fix backwards compatibility with older systems (over SSH) when using screen
+# on certain newer systems.
+# Changes $TERM if it's not valid on this system, and adds a 'tssh' alias for
+# connecting to hosts that don't use this ZSH config.
+if [[ $TERM == screen.*-256color* ]]; then
+  tput longname >/dev/null 2>&1 || export TERM="screen-256color"
+  alias tssh='TERM=screen-256color ssh'
+elif [[ $TERM == screen.* ]]; then
+  tput longname >/dev/null 2>&1 || export TERM="screen"
+  alias tssh='TERM=screen ssh'
+else
+  alias tssh='ssh'
+fi
 
 [[ $UID == $GID ]] && umask 002 || umask 022
