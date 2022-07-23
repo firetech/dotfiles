@@ -1,6 +1,8 @@
 "
 " vim settings by Joakim Tufvegren
 "
+scriptencoding utf-8
+set encoding=utf-8
 
 " ------ Basic settings ------
 set background=dark
