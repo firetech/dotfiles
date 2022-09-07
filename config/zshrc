@@ -157,9 +157,12 @@ if [[ $TERM != dumb ]]; then
     unset ls_bin grep_bin
 fi
 
-# Use other screenrc if $terminfo says unmodified arrow keys are incompatible
-if [[ -z $SCREENRC && ($terminfo[kcuu1] == "[A" || $terminfo[kcud1] == "[B") ]]; then
-    export SCREENRC=$HOME/.screenrc.compat
+# Use other tmux.conf/screenrc if $terminfo says unmodified arrow keys are incompatible
+if [[ $terminfo[kcuu1] == "[A" || $terminfo[kcud1] == "[B" ]]; then
+    alias tmux='tmux -f ~/.tmux.compat.conf'
+    if [[ -z $SCREENRC ]]; then
+        export SCREENRC=$HOME/.screenrc.compat
+    fi
 fi
 
 # Set terminal title

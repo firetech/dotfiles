@@ -1,3 +1,9 @@
+#
+# Reduced screen settings by Joakim Tufvegren
+#
+# Used (via $SCREENRC) when the current terminal uses the same escape codes for
+# (unmodified) arrow keys as PuTTY's Ctrl+Arrow.
+#
 source ~/.screenrc
 
 bindkey "^[[A" # Unbind up arrow
