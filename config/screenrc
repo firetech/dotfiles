@@ -6,10 +6,10 @@ vbell off
 startup_message off
 unsetenv DISPLAY
 
-bindkey "^[[1;5B" prev  # prev window with ctrl-down
-bindkey "^[[B" prev     # same thing in PuTTY
-bindkey "^[[1;5A" next  # next window with ctrl-up
-bindkey "^[[A" next     # same thing in PuTTY
+bindkey "^[[1;5A" prev  # prev window with ctrl-up
+bindkey "^[[A" prev     # same thing in PuTTY
+bindkey "^[[1;5B" next  # next window with ctrl-down
+bindkey "^[[B" next     # same thing in PuTTY
 
 termcapinfo xterm*|Eterm|mlterm "hs:ts=\E]0;:fs=\007:ds=\E]0;screen\007"
 hardstatus string "$USER@%H%?: %t%?"
