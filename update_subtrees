@@ -1,7 +1,19 @@
-#!/bin/sh
+#!/bin/sh -e
 
 cd $(dirname $(realpath $0))
 
-git subtree pull --prefix=config/vim/pack/external/start/yaifa https://github.com/Raimondi/yaifa.git master --squash
-git subtree pull --prefix=config/vim/pack/external/start/vim-vue https://github.com/posva/vim-vue.git master --squash
-git subtree pull --prefix=config/vim/pack/external/start/rainbow https://github.com/luochen1990/rainbow.git master --squash
+# Stash any uncommitted modifications
+trap "git stash pop" EXIT
+git stash
+
+update_subtree() {
+  pfx="$1"
+  repo="$2"
+  branch="${3:-master}"
+  git subtree pull --prefix="$pfx" "$repo" "$branch" --squash || \
+    git subtree add --prefix="$pfx" "$repo" "$branch" --squash
+}
+
+update_subtree config/vim/pack/external/start/yaifa https://github.com/Raimondi/yaifa.git
+update_subtree config/vim/pack/external/start/vim-vue https://github.com/posva/vim-vue.git
+update_subtree config/vim/pack/external/start/rainbow https://github.com/luochen1990/rainbow.git
