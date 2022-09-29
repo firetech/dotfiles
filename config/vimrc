@@ -28,7 +28,7 @@ set nomodeline
 
 " Fix gvim background color
 if has('gui_running')
-  highlight Normal guifg=#fdfdfd guibg=#000000
+  highlight Normal guifg=#b2b2b2 guibg=#000000
 endif
 
 " Nice listchars (used with :set list)
@@ -84,12 +84,10 @@ if has("autocmd")
 endif
 
 " ------ Configure RainbowParentheses ------
-let g:rainbow#max_level = 32
-let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
-" Only do this part when compiled with support for autocommands
-if has("autocmd")
-  autocmd FileType * RainbowParentheses
-endif
+let g:rainbow_active = 1
+let g:rainbow_conf = {
+\	'guifgs': ['#5ed4fb', '#ffffaf', '#afffff', '#ffd7ff']
+\}
 
 " ------ Add g<Tab> shortcut to quickly change to last active tab ------
 if !exists('g:Lasttab')
