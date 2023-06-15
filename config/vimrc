@@ -35,6 +35,7 @@ endif
 set listchars=tab:·\ ,eol:¬,trail:×
 
 " ------ Omni-completion and youcompleteme ------
+silent! packadd! youcompleteme
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
 set completeopt=menuone
