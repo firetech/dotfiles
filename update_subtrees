@@ -15,5 +15,5 @@ update_subtree() {
 }
 
 update_subtree config/vim/pack/external/start/yaifa https://github.com/Raimondi/yaifa.git
-update_subtree config/vim/pack/external/start/vim-vue https://github.com/posva/vim-vue.git
+update_subtree config/vim/pack/external/start/vim-vue-plugin https://github.com/leafOfTree/vim-vue-plugin.git
 update_subtree config/vim/pack/external/start/rainbow https://github.com/luochen1990/rainbow.git
