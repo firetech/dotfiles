@@ -9,6 +9,10 @@ set background=dark
 
 " Search without case if search terms are lowercase
 set ignorecase smartcase
+" Show matching search while typing
+if exists('&incsearch')
+  set incsearch
+endif
 
 " Tabsettings
 set tabstop=2 smartindent backspace=2 shiftwidth=2 expandtab
