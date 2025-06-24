@@ -196,29 +196,34 @@ export PROMPT='${VIRTUAL_ENV_PROMPT}'"${prc[userspec]}:%B%F{blue}%~%(1~./.)%f%b$
 [[ ! -x =git || ! -f ~/.zshrc.git ]] || source ~/.zshrc.git
 
 # System management aliases
-if [[ -x =apt-get ]]; then
-    alias ats='echo Searching... ; aptitude search'
-    alias atv='aptitude show'
-    alias acs='apt search'
-    alias acv='apt show'
-    alias acp='apt-cache policy'
-
+if [[ -x =apt ]]; then
+    # ag = apt-get (now apt)
     alias agu='sudo apt update'
     alias agug='sudo apt upgrade'
-    alias agugd='sudo apt full-upgrade'
-    alias au='sudo apt update && sudo apt full-upgrade'
+    alias agugd='sudo apt full-upgrade' # = apt-get dist-upgrade
     alias agi='sudo apt install'
     alias agir='sudo apt install --reinstall'
     alias agr='sudo apt remove'
     alias agrp='sudo apt purge'
     alias agra='sudo apt autoremove'
     alias agrap='sudo apt autoremove --purge'
+    alias agc='sudo apt autoclean'
+    alias agtc='sudo apt clean'
+
+    # ac = apt-cache (now apt)
+    alias acs='apt search'
+    alias acv='apt show'
+    alias acp='apt-cache policy'
+
+    # at = aptitude
+    alias ats='echo Searching... ; aptitude search'
+    alias atv='aptitude show'
+
+    alias au='sudo apt update && sudo apt full-upgrade'
 
     alias di='sudo dpkg -i'
     alias drc='sudo dpkg-reconfigure'
     alias dlf='dpkg -L'
-    alias agc='sudo apt-get autoclean'
-    alias agtc='sudo apt-get clean'
 fi
 if [[ -f /var/log/syslog ]]; then
     sudo='sudo '
