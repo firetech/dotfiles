@@ -106,7 +106,6 @@ commits_behind=${commits_behind// /}
 if [[ $commits_behind -gt 0 ]]; then
     config_list_pre=$(ls config)
 
-    target="${HOME:A}"
     . "$repo/.parse_config_map.zsh" || \
             _log_warn "Failed to load config_map."
     typeset -A config_map_pre
@@ -131,7 +130,7 @@ if [[ $commits_behind -gt 0 ]]; then
                 \>\ *)
                     f=${f#> }
                     if (( ${+config_map[$f]} )); then
-                            f="${config_map[$f]/#$target\//~/}"
+                            f="${config_map[$f]/#$home_dir\//~/}"
                     else
                             f="~/.$f"
                     fi
@@ -140,7 +139,7 @@ if [[ $commits_behind -gt 0 ]]; then
                 \<\ *)
                     f=${f#< }
                     if (( ${+config_map_pre[$f]} )); then
-                            f="${config_map_pre[$f]/#$target\//~/}"
+                            f="${config_map_pre[$f]/#$home_dir\//~/}"
                     else
                             f="~/.$f"
                     fi

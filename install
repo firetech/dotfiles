@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
 repo="${0:A:h}"
-target="${HOME:A}"
 src="$repo/config"
 backup="$repo/backup/$(date +%Y%m%d_%H%M%S)"
 
@@ -10,13 +9,13 @@ backup="$repo/backup/$(date +%Y%m%d_%H%M%S)"
 echo "Dotfiles installation"
 echo "====================="
 echo
-echo "Target directory: $target"
-echo " - XDG config: $xdg_config_dir"
-echo " - XDG data: $xdg_data_dir"
+echo "Target directory (~): $home_dir"
+echo " - XDG config: ${xdg_config_dir/#$home_dir\//~/}"
+echo " - XDG data: ${xdg_data_dir/#$home_dir\//~/}"
 echo "Source directory: $src"
 echo
 echo "Backup directory: $backup"
-echo "(Conflicting files and directories will be moved here)"
+echo "(Conflicting configs will be moved here.)"
 echo
 
 if [[ ! -O $src ]]; then
@@ -49,12 +48,12 @@ for file in *; do
 	if (( ${+config_map[$file]} )); then
 		target_file="${config_map[$file]}"
 	else
-		target_file="$target/.$file"
+		target_file="$home_dir/.$file"
 	fi
 	if [[ ${target_file:A} != ${src_file:A} ]]; then
 		echo
 		echo "* ${target_file/#$target\//~/}"
-		if [[ -e $target_file ]]; then
+		if [[ -e $target_file || -L $target_file ]]; then
 			backup_file="$backup/$file"
 			echo "  ! $target_file exists,"
 			echo -n "      moving to $backup_file... "
@@ -63,16 +62,32 @@ for file in *; do
 			mv "$target_file" "$backup_file"
 			check_status
 		fi
-		echo -n "  - Symlinking $target_file -> $src_file... "
-		target_dir="${target_file:A:h}"
-		if [[ "$target_dir" != "$target" && ! -d "$target_dir" ]]; then
+		src_rel_steps=()
+		target_parent="${target_file:h}"
+		while [[ $target_parent != "/" && $target_parent != $home_dir ]]; do
+			src_rel_steps+=("..")
+			target_parent="${target_parent:h}"
+		done
+		if [[ $target_parent != "/" ]]; then
+			if [[ -n $src_rel_steps ]]; then
+				src_rel_path="${(j:/:)src_rel_steps}/"
+			else
+				src_rel_path=
+			fi
+			src_file=${src_file/#$home_dir\//$src_rel_path}
+		else
+			echo "  ! Failed to construct relative path, using an absolute symlink instead."
+		fi
+		echo -n "  - Symlinking ${target_file/#$home_dir\//~/} -> ${src_file/#$home_dir\//~/}... "
+		target_dir="${target_file:h}"
+		if [[ "$target_dir" != "$home_dir" && ! -d "$target_dir" ]]; then
 			mkdir -p "$target_dir"
 			check_status -q
 		fi
-		ln -srn "$src_file" "$target_file"
+		ln -s "$src_file" "$target_file"
 		check_status
 	else
-		skipped+=("$target_file -> $src_file")
+		skipped+=("${target_file/#$home_dir\//~/} -> ${src_file/#$home_dir\//~/}")
 	fi
 done
 
@@ -81,7 +96,7 @@ echo "Finished."
 
 if [[ -n $skipped ]]; then
 	echo
-	echo "The following files/directories were already linked to the correct target:"
+	echo "The following configs were already linked to the correct target:"
 	for file in $skipped; do
 		echo "  * $file"
 	done
