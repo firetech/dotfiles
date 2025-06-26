@@ -1,25 +1,26 @@
 #!/usr/bin/env zsh
 
+repo="${0:A:h}"
 target="${HOME:A}"
-source="${0:A:h}/config"
-backup="${0:A:h}/backup/$(date +%Y%m%d_%H%M%S)"
+src="$repo/config"
+backup="$repo/backup/$(date +%Y%m%d_%H%M%S)"
 
-abs_source=$source
-source="${source/$target\//}"
-[[ "$source" != "$abs_source" ]] && source_note=" (relative to target)"
+. "$repo/.parse_config_map.zsh"
 
 echo "Dotfiles installation"
 echo "====================="
 echo
 echo "Target directory: $target"
-echo "Source directory: $source$source_note"
+echo " - XDG config: $xdg_config_dir"
+echo " - XDG data: $xdg_data_dir"
+echo "Source directory: $src"
 echo
 echo "Backup directory: $backup"
 echo "(Conflicting files and directories will be moved here)"
 echo
 
-if [[ ! -O $abs_source ]]; then
-	echo "! $abs_source is not owned by $(id -un)."
+if [[ ! -O $src ]]; then
+	echo "! $src is not owned by $(id -un)."
 	echo "    You need your own clone of the git repository!"
 	exit 1
 fi
@@ -27,7 +28,6 @@ fi
 echo -n "Continue? [Y/n] "
 
 read ans
-
 if [[ "${ans:l}" = "n" ]]; then
 	echo "Abort."
 	exit 1
@@ -43,28 +43,36 @@ check_status() {
 }
 
 skipped=()
-cd $abs_source
+cd $src
 for file in *; do
-	abs_source_file="$abs_source/$file"
-	source_file="$source/$file"
-	target_file="$target/.$file"
-	if [[ ${target_file:A} != ${abs_source_file:A} ]]; then
+	src_file="$src/$file"
+	if (( ${+config_map[$file]} )); then
+		target_file="${config_map[$file]}"
+	else
+		target_file="$target/.$file"
+	fi
+	if [[ ${target_file:A} != ${src_file:A} ]]; then
 		echo
-		echo "* .$file"
+		echo "* ${target_file/#$target\//~/}"
 		if [[ -e $target_file ]]; then
 			backup_file="$backup/$file"
 			echo "  ! $target_file exists,"
 			echo -n "      moving to $backup_file... "
-			mkdir -p $backup
+			mkdir -p "$backup"
 			check_status -q
-			mv $target_file $backup_file
+			mv "$target_file" "$backup_file"
 			check_status
 		fi
-		echo -n "  - Symlinking $target_file -> $source_file... "
-		ln -s $source_file $target_file
+		echo -n "  - Symlinking $target_file -> $src_file... "
+		target_dir="${target_file:A:h}"
+		if [[ "$target_dir" != "$target" && ! -d "$target_dir" ]]; then
+			mkdir -p "$target_dir"
+			check_status -q
+		fi
+		ln -srn "$src_file" "$target_file"
 		check_status
 	else
-		skipped=($skipped "$target_file -> $source_file")
+		skipped+=("$target_file -> $src_file")
 	fi
 done
 

@@ -1,0 +1,3 @@
+thefuck:{XDG_CONFIG}/thefuck
+nvim-config:{XDG_CONFIG}/nvim
+nvim-pack:{XDG_DATA}/nvim/site/pack

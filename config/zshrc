@@ -234,25 +234,6 @@ fi
 
 alias vim_swp_reopen='vim -p $(find . -name .\*.sw? | sed -e "s/\/\.\(.*\)\.sw.$/\/\1/g")'
 
-# The Fuck
-if [[ -x =thefuck ]]; then
-    # Don't want the entirety of .config in the dotfiles repo...
-    if [[ ! -d "$HOME/.config/thefuck" ]]; then
-        [[ -d "$HOME/.config" ]] || mkdir "$HOME/.config"
-        ln -sf "$HOME/.thefuck-config" "$HOME/.config/thefuck"
-    fi
-    eval $(thefuck --alias)
-fi
-
-# NeoVim
-# Just symlink the normal vim stuff for now. Not perfect, but it's a start.
-if [[ -x =nvim ]]; then
-    [[ -d "$HOME/.config/nvim" ]] || mkdir -p "$HOME/.config/nvim"
-    [[ -f "$HOME/.config/nvim/init.vim" ]] || ln -sf "$HOME/.vimrc" "$HOME/.config/nvim/init.vim"
-    [[ -d "$HOME/.local/share/nvim/site" ]] || mkdir -p "$HOME/.local/share/nvim/site"
-    [[ -d "$HOME/.local/share/nvim/site/pack" ]] || ln -sfn "$HOME/.vim/pack" "$HOME/.local/share/nvim/site/"
-fi
-
 # Functions to update dotfiles and reload ZSH config
 update_dotfiles() {
     local zshrc="$HOME/.zshrc"

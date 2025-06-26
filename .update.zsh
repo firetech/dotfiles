@@ -22,19 +22,19 @@ __log_print() {
     fi
 
     shift
-    for x in $@; echo $pre$x$post
+    for x in "$@"; echo $pre$x$post
 }
 _log_info() {
-    __log_print 32 $@
+    __log_print 32 "$@"
 }
 _log_warn() {
-    __log_print 33 $@ >&2
+    __log_print 33 "$@" >&2
 }
 _log_error() {
-    __log_print 31 $@ >&2
+    __log_print 31 "$@" >&2
 }
 _fatal() {
-    _log_error $@
+    _log_error "$@"
     exit 1
 }
 
@@ -104,29 +104,61 @@ commits_behind=$( (git log --oneline HEAD..$branch | wc -l) || \
 commits_behind=${commits_behind// /}
 
 if [[ $commits_behind -gt 0 ]]; then
-    file_list_pre=$(ls config)
+    config_list_pre=$(ls config)
+
+    target="${HOME:A}"
+    . "$repo/.parse_config_map.zsh" || \
+            _log_warn "Failed to load config_map."
+    typeset -A config_map_pre
+    config_map_pre=(${(kv)config_map})
 
     _log_info "Found $commits_behind new commits. Updating..."
     git rebase -q $branch || \
             _fatal "Updating failed." "Manual merge in '$repo' needed."
     _log_info "Update successful."
 
-    if [[ $file_list_pre != $(ls config) ]]; then
-        file_list_diff=$(ls config | diff --unchanged-line-format= \
-                --new-line-format='+ .%L' \
-                --old-line-format='- .%L' \
-                =(echo $file_list_pre) -)
-        # Separate and split lines into array
-        file_list_new=(${(f)"$(echo $file_list_diff | grep '^+')"})
-        file_list_rm=(${(f)"$(echo $file_list_diff | grep '^-')"})
-        if [[ -n $file_list_new ]]; then
-            _log_warn "New files:" $file_list_new
+    config_list=$(ls config)
+    if [[ $config_list_pre != $config_list ]]; then
+        . "$repo/.parse_config_map.zsh" || \
+                _log_warn "Failed to load config_map."
+        # Get arrays of new and removed files
+        config_list_diff=("${(@f)$(diff \
+                --unchanged-line-format= \
+                --new-line-format='+ %L' \
+                --old-line-format='- %L' \
+                =(echo $config_list_pre) =(echo $config_list))}")
+        config_list_new=()
+        config_list_rm=()
+        for f in $config_list_diff; do
+            case "$f" in
+                +\ *)
+                    f=${f#+ }
+                    if (( ${+config_map[$f]} )); then
+                            f="${config_map[$f]/#$target\//~/}"
+                    else
+                            f="~/.$f"
+                    fi
+                    config_list_new+=("+ $f")
+                ;;
+                -\ *)
+                    f=${f#- }
+                    if (( ${+config_map_pre[$f]} )); then
+                            f="${config_map_pre[$f]/#$target\//~/}"
+                    else
+                            f="~/.$f"
+                    fi
+                    config_list_rm+=("- $f")
+                ;;
+            esac
+        done
+        if [[ -n $config_list_new ]]; then
+            _log_warn "New configs:" $config_list_new
             _log_info "Re-running install script..."
             $repo/install || _log_error "Install script failed!"
         fi
-        if [[ -n $file_list_rm ]]; then
-             _log_warn "Removed files:" $file_list_rm \
-                    "You may want to remove these symlinks."
+        if [[ -n $config_list_rm ]]; then
+             _log_warn "Removed configs:" $config_list_rm \
+                    "You may want to remove these (now broken) symlinks."
         fi
     fi
 
