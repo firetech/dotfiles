@@ -161,7 +161,7 @@ fi
 if [[ $terminfo[kcuu1] == "[A" || $terminfo[kcud1] == "[B" ]]; then
     alias tmux='tmux -f ~/.tmux.compat.conf'
     if [[ -z $SCREENRC ]]; then
-        export SCREENRC=$HOME/.screenrc.compat
+        export SCREENRC="$HOME/.screenrc.compat"
     fi
 fi
 
@@ -182,7 +182,7 @@ zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle :compinstall filename '~/.zshrc'
 autoload -Uz compinit
-$(print -Pn "compinit -d $HOME/.zcompdump.%m")
+$(print -Pn "compinit -d '$HOME/.zcompdump.%m'")
 
 
 # Set prompt
@@ -237,18 +237,18 @@ alias vim_swp_reopen='vim -p $(find . -name .\*.sw? | sed -e "s/\/\.\(.*\)\.sw.$
 # The Fuck
 if [[ -x =thefuck ]]; then
     # Don't want the entirety of .config in the dotfiles repo...
-    if [[ ! -d $HOME/.config/thefuck ]]; then
-        [[ -d $HOME/.config ]] || mkdir $HOME/.config
-        ln -sf $HOME/.thefuck-config $HOME/.config/thefuck
+    if [[ ! -d "$HOME/.config/thefuck" ]]; then
+        [[ -d "$HOME/.config" ]] || mkdir "$HOME/.config"
+        ln -sf "$HOME/.thefuck-config" "$HOME/.config/thefuck"
     fi
     eval $(thefuck --alias)
 fi
 
 # Functions to update dotfiles and reload ZSH config
 update_dotfiles() {
-    local zshrc=$HOME/.zshrc
-    local repo=${zshrc:A:h:h}
-    zsh $repo/.update.zsh $@
+    local zshrc="$HOME/.zshrc"
+    local repo="${zshrc:A:h:h}"
+    zsh "$repo/.update.zsh" $@
 
     local estatus=$?
     if [[ $estatus -eq 0x8 ]]; then
