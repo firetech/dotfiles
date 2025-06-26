@@ -11,7 +11,7 @@ zshrc=$HOME/.zshrc
 repo=${zshrc:A:h:h}
 timestamp_file=$repo/.update_timestamp
 update_limit=14
-branch=origin/master
+branch=origin/test
 exit_status=0
 
 __log_print() {
