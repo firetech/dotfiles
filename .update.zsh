@@ -123,16 +123,13 @@ if [[ $commits_behind -gt 0 ]]; then
                 _log_warn "Failed to load config_map."
         # Get arrays of new and removed files
         config_list_diff=("${(@f)$(diff \
-                --unchanged-line-format= \
-                --new-line-format='+ %L' \
-                --old-line-format='- %L' \
                 =(echo $config_list_pre) =(echo $config_list))}")
         config_list_new=()
         config_list_rm=()
         for f in $config_list_diff; do
             case "$f" in
-                +\ *)
-                    f=${f#+ }
+                \>\ *)
+                    f=${f#> }
                     if (( ${+config_map[$f]} )); then
                             f="${config_map[$f]/#$target\//~/}"
                     else
@@ -140,8 +137,8 @@ if [[ $commits_behind -gt 0 ]]; then
                     fi
                     config_list_new+=("+ $f")
                 ;;
-                -\ *)
-                    f=${f#- }
+                \<\ *)
+                    f=${f#< }
                     if (( ${+config_map_pre[$f]} )); then
                             f="${config_map_pre[$f]/#$target\//~/}"
                     else
