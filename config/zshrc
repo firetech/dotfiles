@@ -244,6 +244,15 @@ if [[ -x =thefuck ]]; then
     eval $(thefuck --alias)
 fi
 
+# NeoVim
+# Just symlink the normal vim stuff for now. Not perfect, but it's a start.
+if [[ -x =nvim ]]; then
+    [[ -d "$HOME/.config/nvim" ]] || mkdir -p "$HOME/.config/nvim"
+    [[ -f "$HOME/.config/nvim/init.vim" ]] || ln -sf "$HOME/.vimrc" "$HOME/.config/nvim/init.vim"
+    [[ -d "$HOME/.local/share/nvim/site" ]] || mkdir -p "$HOME/.local/share/nvim/site"
+    [[ -d "$HOME/.local/share/nvim/site/pack" ]] || ln -sfn "$HOME/.vim/pack" "$HOME/.local/share/nvim/site/"
+fi
+
 # Functions to update dotfiles and reload ZSH config
 update_dotfiles() {
     local zshrc="$HOME/.zshrc"
