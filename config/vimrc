@@ -91,7 +91,7 @@ endif
 " ------ Configure RainbowParentheses ------
 let g:rainbow_active = 1
 let g:rainbow_conf = {
-\	'guifgs': ['#5ed4fb', '#ffffaf', '#afffff', '#ffd7ff']
+\    'guifgs': ['#5ed4fb', '#ffffaf', '#afffff', '#ffd7ff']
 \}
 
 " ------ Add g<Tab> shortcut to quickly change to last active tab ------

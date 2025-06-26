@@ -7,7 +7,7 @@
 
 # Add .gitignore.dotfiles to git's global include path if not already there.
 git config --get-all include.path | grep -q .gitconfig.dotfiles || {
-	git config --global --add include.path .gitconfig.dotfiles
+    git config --global --add include.path .gitconfig.dotfiles
 }
 
 typeset -ga preexec_functions
@@ -16,65 +16,65 @@ typeset -ga chpwd_functions
 
 # Git prompt helpers
 git_prompt_parse() {
-	local git_dir git_pwd branch state
+    local git_dir git_pwd branch state
 
-	__ZSH_GIT_REPO=""
+    __ZSH_GIT_REPO=""
 
-	git_dir=$(git rev-parse --git-dir 2> /dev/null) || return
+    git_dir=$(git rev-parse --git-dir 2> /dev/null) || return
 
-	state=""
-	# rewritten by Thomas Ritz <thomas(at)galaxy-ritz(dot)de>
-	if [[ -d $git_dir/rebase-apply ]]; then
-		if [[ -f $git_dir/rebase-apply/rebasing ]]; then
-			state=":rebase"
-		elif [[ -f $git_dir/rebase-apply/applying ]]; then
-			state=":am"
-		else
-			state=":am/rebase"
-		fi
-		branch=$(git symbolic-ref HEAD 2>/dev/null)
-	elif [[ -f $git_dir/rebase-merge/interactive ]]; then
-		state=":rebase -i"
-		branch=$(cat $git_dir/rebase-merge/head-name)
-	elif [[ -d $git_dir/rebase-merge ]]; then
-		state=":rebase -m"
-		branch=$(cat $git_dir/rebase-merge/head-name)
-	elif [[ -f $git_dir/MERGE_HEAD ]]; then
-		state=":merge"
-		branch=$(git symbolic-ref HEAD 2>/dev/null)
-	else
-		[[ ! -f $git_dir/BISECT_LOG ]] || state="bisect"
-		branch=$(git symbolic-ref HEAD 2>/dev/null) || \
-			branch=$(git describe --exact-match HEAD 2>/dev/null) || \
-			branch=$(cut -c1-7 $git_dir/HEAD)...
-	fi
+    state=""
+    # rewritten by Thomas Ritz <thomas(at)galaxy-ritz(dot)de>
+    if [[ -d $git_dir/rebase-apply ]]; then
+        if [[ -f $git_dir/rebase-apply/rebasing ]]; then
+            state=":rebase"
+        elif [[ -f $git_dir/rebase-apply/applying ]]; then
+            state=":am"
+        else
+            state=":am/rebase"
+        fi
+        branch=$(git symbolic-ref HEAD 2>/dev/null)
+    elif [[ -f $git_dir/rebase-merge/interactive ]]; then
+        state=":rebase -i"
+        branch=$(cat $git_dir/rebase-merge/head-name)
+    elif [[ -d $git_dir/rebase-merge ]]; then
+        state=":rebase -m"
+        branch=$(cat $git_dir/rebase-merge/head-name)
+    elif [[ -f $git_dir/MERGE_HEAD ]]; then
+        state=":merge"
+        branch=$(git symbolic-ref HEAD 2>/dev/null)
+    else
+        [[ ! -f $git_dir/BISECT_LOG ]] || state="bisect"
+        branch=$(git symbolic-ref HEAD 2>/dev/null) || \
+            branch=$(git describe --exact-match HEAD 2>/dev/null) || \
+            branch=$(cut -c1-7 $git_dir/HEAD)...
+    fi
 
-	__ZSH_GIT_FULL_DIR=${git_dir:A:h}
-	__ZSH_GIT_REPO=${__ZSH_GIT_FULL_DIR}
+    __ZSH_GIT_FULL_DIR=${git_dir:A:h}
+    __ZSH_GIT_REPO=${__ZSH_GIT_FULL_DIR}
 
-	git_pwd=$PWD
-	__ZSH_GIT_REPO_PATH=${git_pwd##${__ZSH_GIT_FULL_DIR}}
+    git_pwd=$PWD
+    __ZSH_GIT_REPO_PATH=${git_pwd##${__ZSH_GIT_FULL_DIR}}
 
-	if [[ ${__ZSH_GIT_REPO_PATH} == ${git_pwd} ]]; then
-		# symlinks causing problems...
-		__ZSH_GIT_REPO_PATH=""
-		while [[ ${git_pwd:A} != ${__ZSH_GIT_FULL_DIR} ]]; do
-			__ZSH_GIT_REPO_PATH="/${git_pwd:t}${__ZSH_GIT_REPO_PATH}"
-			git_pwd=${git_pwd:h}
-			if [[ $git_pwd = "/" ]]; then
-				# Failed to find root, (symlinked) pwd is not within git repo.
-				# Include both git root and pwd in prompt
-				git_pwd="%F{black}${__ZSH_GIT_FULL_DIR/${HOME:A}/~}%F{blue}"
-				__ZSH_GIT_REPO_PATH="%F{black}:%F{blue}${PWD/$HOME/~}"
-				break
-			fi
-		done
-		__ZSH_GIT_REPO=${git_pwd}
-	fi
+    if [[ ${__ZSH_GIT_REPO_PATH} == ${git_pwd} ]]; then
+        # symlinks causing problems...
+        __ZSH_GIT_REPO_PATH=""
+        while [[ ${git_pwd:A} != ${__ZSH_GIT_FULL_DIR} ]]; do
+            __ZSH_GIT_REPO_PATH="/${git_pwd:t}${__ZSH_GIT_REPO_PATH}"
+            git_pwd=${git_pwd:h}
+            if [[ $git_pwd = "/" ]]; then
+                # Failed to find root, (symlinked) pwd is not within git repo.
+                # Include both git root and pwd in prompt
+                git_pwd="%F{black}${__ZSH_GIT_FULL_DIR/${HOME:A}/~}%F{blue}"
+                __ZSH_GIT_REPO_PATH="%F{black}:%F{blue}${PWD/$HOME/~}"
+                break
+            fi
+        done
+        __ZSH_GIT_REPO=${git_pwd}
+    fi
 
-	__ZSH_GIT_REPO="${__ZSH_GIT_REPO/$HOME/~}"
-	__ZSH_GIT_BRANCH=${branch#refs/heads/}
-	__ZSH_GIT_STATE=${state}
+    __ZSH_GIT_REPO="${__ZSH_GIT_REPO/$HOME/~}"
+    __ZSH_GIT_BRANCH=${branch#refs/heads/}
+    __ZSH_GIT_STATE=${state}
 }
 
 # Make sure functions aren't duplicated in hook arrays
@@ -84,29 +84,29 @@ precmd_functions[${precmd_functions[(i)git_prompt_info]}]=()
 
 preexec_functions+='zsh_preexec_update_git_vars'
 zsh_preexec_update_git_vars() {
-	case "$(history $HISTCMD)" in
-		*git*)
-			__GIT_REGEN_PROMPT=1
-		;;
-	esac
+    case "$(history $HISTCMD)" in
+        *git*)
+            __GIT_REGEN_PROMPT=1
+        ;;
+    esac
 }
 
 chpwd_functions+='zsh_chpwd_update_git_vars'
 zsh_chpwd_update_git_vars() {
-	__GIT_REGEN_PROMPT=1
+    __GIT_REGEN_PROMPT=1
 }
 
 precmd_functions+='git_prompt_info'
 git_prompt_info() {
-	if [[ $__GIT_REGEN_PROMPT == 1 ]]; then
-		git_prompt_parse
-		__GIT_REGEN_PROMPT=0
-		if [[ -n $__ZSH_GIT_REPO ]]; then
-			PROMPT=${__GIT_PROMPT}
-		else
-			PROMPT=${__GIT_ORIG_PROMPT}
-		fi
-	fi
+    if [[ $__GIT_REGEN_PROMPT == 1 ]]; then
+        git_prompt_parse
+        __GIT_REGEN_PROMPT=0
+        if [[ -n $__ZSH_GIT_REPO ]]; then
+            PROMPT=${__GIT_PROMPT}
+        else
+            PROMPT=${__GIT_ORIG_PROMPT}
+        fi
+    fi
 }
 
 typeset -xgH __ZSH_GIT_BRANCH
