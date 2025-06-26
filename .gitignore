@@ -3,3 +3,6 @@ backup
 config/vim/.netrwhist
 config/vim/doc/tags
 *.pyc
+
+.*.sw?
+*~
