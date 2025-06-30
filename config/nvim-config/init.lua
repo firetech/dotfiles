@@ -1,28 +1,27 @@
 -- load .vimrc
 vim.cmd('source ~/.vimrc')
 
--- copied from https://github.com/Wansmer/nvim-config/blob/76ffae6180ce6f6fbc0c8f028276138b662caac3/lua/autocmd.lua
-local hl_ns = vim.api.nvim_create_namespace('search')
-local hlsearch_group = vim.api.nvim_create_augroup('hlsearch_group', { clear = true })
+-- copied from https://github.com/Wansmer/nvim-config/blob/977a97c/lua/modules/key_listener.lua
+local listener_ls = vim.api.nvim_create_namespace("key_listener")
 
-local function manage_hlsearch(char)
-  local key = vim.fn.keytrans(char)
-  local keys = { '<CR>', 'n', 'N', '*', '#', '?', '/' }
+---Deleting hlsearch when it already no needed
+local function toggle_hlsearch(char)
+  local keys = { "<CR>", "n", "N", "*", "#", "?", "/" }
+  local new_hlsearch = vim.tbl_contains(keys, char) and 1 or 0
 
-  if vim.fn.mode() == 'n' then
-    if not vim.tbl_contains(keys, key) then
-      vim.cmd([[ :set nohlsearch ]])
-    elseif vim.tbl_contains(keys, key) then
-      vim.cmd([[ :set hlsearch ]])
-    end
+  if vim.api.nvim_get_vvar("hlsearch") ~= new_hlsearch then
+    vim.api.nvim_set_vvar("hlsearch", new_hlsearch)
   end
-
-  vim.on_key(nil, hl_ns)
 end
 
-vim.api.nvim_create_autocmd('CursorMoved', {
-  group = hlsearch_group,
-  callback = function()
-    vim.on_key(manage_hlsearch, hl_ns)
-  end,
-})
+---Handler for pressing keys. Added listeners for modes
+---@param char string
+local function key_listener(char)
+  local key = vim.fn.keytrans(char)
+  local mode = vim.fn.mode()
+  if mode == "n" then
+    toggle_hlsearch(key)
+  end
+end
+
+vim.on_key(key_listener, listener_ls)
