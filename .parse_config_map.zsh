@@ -1,9 +1,7 @@
 home_dir="${HOME:A}"
 
-xdg_config_dir="${XDG_CONFIG_HOME:-$home_dir/.config}"
-xdg_config_dir="${xdg_config_dir:A}"
-xdg_data_dir=${XDG_DATA_HOME:-$home_dir/.local/share}
-xdg_data_dir="${xdg_data_dir:A}"
+xdg_config_dir="${${XDG_CONFIG_HOME:-$home_dir/.config}:A}"
+xdg_data_dir="${${XDG_DATA_HOME:-$home_dir/.local/share}:A}"
 
 typeset -A config_map
 while IFS=$'\n' read -r line; do
