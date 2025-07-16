@@ -66,8 +66,7 @@ elif [[ $1 == auto ]]; then
         exit 0
     fi
 
-    # Force old master branch to update again
-    #[[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 0
+    [[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 0
 
 elif [[ $# -gt 0 ]]; then
     _fatal "Unknown argument '$1'"
