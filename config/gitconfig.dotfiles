@@ -21,3 +21,5 @@
     pl = pull
 [pull]
     rebase = merges
+[init]
+    defaultBranch = main

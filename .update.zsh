@@ -11,7 +11,7 @@ zshrc=$HOME/.zshrc
 repo=${zshrc:A:h:h}
 timestamp_file=$repo/.update_timestamp
 update_limit=14
-branch=origin/master
+branch=origin/main
 exit_status=0
 
 __log_print() {
@@ -66,7 +66,8 @@ elif [[ $1 == auto ]]; then
         exit 0
     fi
 
-    [[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 0
+    # Force old master branch to update again
+    #[[ $(($(_current_day) - $timestamp)) -lt $update_limit ]] && exit 0
 
 elif [[ $# -gt 0 ]]; then
     _fatal "Unknown argument '$1'"
@@ -82,6 +83,21 @@ if [[ ! -d $repo/.git ]]; then
 fi
 
 cd $repo
+
+# Rename local branch if using old naming.
+# This bit can be removed when all clients have been updated.
+if [[ $(git branch --show-current) == master ]] && \
+        ! git branch | grep -q main; then
+    _log_info "Renaming local branch..."
+    git branch -m main || \
+            _fatal "Failed to rename local branch."
+    git branch --set-upstream-to=$branch main || \
+            git branch --set-upstream main $branch || \
+            _log_warn "Error changing upstream branch."
+    git remote set-head origin main || \
+            _log_warn "Error changing remote HEAD."
+fi
+# End of local branch renaming.
 
 commits_ahead=$( (git log --oneline $branch..HEAD | wc -l) || \
         _fatal "Checking number of commits ahead failed." )
