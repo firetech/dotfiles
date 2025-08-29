@@ -40,7 +40,7 @@ if [[ -f $DIRSTACKFILE && $#dirstack -eq 0 ]]; then
     dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
     # Make 'cd -' go to exit dir of last shell
     if [[ -d $dirstack[1] && $dirstack[1] != $PWD ]]; then
-        cd $dirstack[1] && cd $OLDPWD
+        \builtin cd $dirstack[1] && \builtin cd $OLDPWD
     elif [[ $dirstack[1] == $PWD ]]; then
         # Exit dir of last shell is $PWD, pop to avoid duplicates
         popd > /dev/null
@@ -184,7 +184,6 @@ zstyle :compinstall filename '~/.zshrc'
 autoload -Uz compinit
 $(print -Pn "compinit -d '$HOME/.zcompdump.%m'")
 
-
 # Set prompt
 setopt prompt_subst
 typeset -A prc
@@ -194,6 +193,20 @@ export PROMPT='${VIRTUAL_ENV_PROMPT}'"${prc[userspec]}:%B%F{blue}%~%(1~./.)%f%b$
 
 # Load git prompt if possible
 [[ ! -x =git || ! -f ~/.zshrc.git ]] || source ~/.zshrc.git
+
+# Replace cd with zoxide if available (zoxide >= 0.9.4 recommended)
+if [[ -x =zoxide ]]; then
+    eval "$(zoxide init zsh --cmd cd)"
+
+    # Workaround zoxide not handling "cd -XX"/"cd +XX" (where XX >= 10, let zoxide handle XX < 10).
+    cd() {
+        if [[ "$1" =~ ^[-+][0-9][0-9]+$ ]]; then
+            \builtin cd -- "$1"
+        else
+            __zoxide_z "$@"
+        fi
+    }
+fi
 
 # System management aliases
 if [[ -x =apt ]]; then
