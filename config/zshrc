@@ -247,6 +247,28 @@ fi
 
 alias vim_swp_reopen='vim -p $(find . -name .\*.sw? | sed -e "s/\/\.\(.*\)\.sw.$/\/\1/g")'
 
+# Activate a python venv in current directory or any parent directory.
+# Usage: venv-activate [venv-name]
+venv-activate() {
+  base_dir="$PWD"
+  venv_dirs=(.venv venv)
+  [[ -z $1 ]] || venv_dirs=($1)
+  while [[ $base_dir != "/" ]]; do
+    for venv_dir in $venv_dirs ; do
+      venv="$base_dir/$venv_dir"
+      [[ ! -f "$venv/bin/activate" ]] || {
+        echo "Activating $venv..."
+        source "$venv/bin/activate"; retval=$?
+        cd .  # Fix potential duplicate venv name in prompt.
+        return $retval
+      }
+    done
+    base_dir=${base_dir:h}
+  done
+  echo "No venv found!" >&2
+  return 1
+}
+
 # Functions to update dotfiles and reload ZSH config
 update_dotfiles() {
     local zshrc="$HOME/.zshrc"
