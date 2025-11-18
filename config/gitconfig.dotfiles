@@ -7,10 +7,11 @@
     br = branch
     ci = commit
     co = checkout
-    main-branch = "!head() { git symbolic-ref refs/remotes/$1/HEAD 2>/dev/null; }; f() { remote=${1:-origin}; { head ${remote} || { git remote set-head ${remote} --auto >&2 && head ${remote}; }; } | sed -e "s!^refs/remotes/${remote}/!!"; }; f"
+    remote-main = "!head() { git symbolic-ref refs/remotes/$1/HEAD 2>/dev/null; }; f() { remote=${1:-origin}; head ${remote} || { git remote set-head ${remote} --auto >&2 && head ${remote}; }; }; f"
+    main-branch = "!f() { remote=${1:-origin}; git remote-main ${remote} | sed -e "s!^refs/remotes/${remote}/!!"; }; f"
     com = "!git checkout $(git main-branch) && :"
     cof = !git fetch && git checkout
-    cob = !git fetch && git checkout -b $1 --no-track $(git main-branch) && :
+    cob = !git fetch && git checkout -b $1 --no-track $(git remote-main) && :
     cp = cherry-pick
     m = !git merge --no-ff origin/$1 && :
     sha1 = rev-parse HEAD
