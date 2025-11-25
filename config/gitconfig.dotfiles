@@ -5,6 +5,7 @@
 [alias]
     ap = add -p
     br = branch
+    brp = "!git br --merged \"$(git remote-main)\" --no-show-current --list | grep -v \"$(git main-branch)\" | grep -Ev \"^\\* \" | xargs --no-run-if-empty git br -d && :"
     ci = commit
     co = checkout
     remote-main = "!head() { git symbolic-ref refs/remotes/$1/HEAD 2>/dev/null; }; f() { remote=${1:-origin}; head ${remote} || { git remote set-head ${remote} --auto >&2 && head ${remote}; }; }; f"
