@@ -52,37 +52,3 @@ begin
 rescue LoadError
   # Ignore
 end
-
-# IRB improvements: Command history, coloring, more shell like commands cd, pwd, dir, cat
-# Use powerful shell commands
-# dir
-# dir '**/*.rb'
-# cd 'app'
-# pwd
-# cat 'config/environment.rb'
-# dir('vendor/plugins/*').each do |d| inside_dir(d) {`git pull`} end
-# Developed by umur dot ozkul at gmail dot com
-require 'fileutils'
-class Object
-  def cd d, options={};              FileUtils.cd d, options;  end
-  def pwd;                           FileUtils.pwd; end
-  def dir d='*';                     Dir[d]; end
-  alias ls dir
-  def cat file;                      puts `cat #{file}`; end
-  def ln_s old, new, options={};     FileUtils.ln_s old, new, options; end
-  def mv file, new_file, options={}; FileUtils.mv file, new_file, options; end
-  def rm list, options={};           FileUtils.rm list, options; end
-  def mkdir dirname, options={};     FileUtils.mkdir dirname, options; end
-  def touch list, options={};        FileUtils.touch list, options; end
-
-  def inside_dir d, &block
-      b = pwd
-      begin
-        cd d
-        block.call
-      ensure
-        cd b
-      end
-  end
-end
-
