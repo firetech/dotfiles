@@ -23,7 +23,7 @@
     ps = "!f() { if [ \\( $# -eq 0 -o \\( $# -eq 1 -a -n \"$(git config \"remote.$1.url\")\" \\) \\) -a -z \"$(git config \"branch.$(git symbolic-ref --short HEAD).merge\")\" ]; then git push -u ${1:-origin} \"$(git symbolic-ref --short HEAD)\"; else git push \"$@\"; fi; }; f"
     psf = push --force-with-lease
     psff = push -f
-    psr = "!f() { local upstream=$(git config \"branch.$(git symbolic-ref --short HEAD).merge\"); upstream=${upstream:-$(git symbolic-ref HEAD)}; local dest=${upstream/refs\\/heads\\//refs\\/for\\/}; local params=; [ -z \"$2\" ] || params=\"%$2\"; git push ${1:-origin} HEAD:$dest$params; }; f"
+    psr = "!f() { local upstream=$(git config \"branch.$(git symbolic-ref --short HEAD).merge\"); upstream=${upstream:-$(git symbolic-ref HEAD)}; local dest=\"refs/for/${upstream#refs/heads/}\"; local params=; [ -z \"$2\" ] || params=\"%$2\"; git push ${1:-origin} HEAD:$dest$params; }; f"
     pl = pull
 [pull]
     rebase = merges
