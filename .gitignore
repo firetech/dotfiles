@@ -2,6 +2,7 @@
 backup
 config/vim/.netrwhist
 config/vim/doc/tags
+config/nvim-config/lazy-lock.json
 *.pyc
 
 .*.sw?

@@ -1,5 +1,8 @@
 -- load .vimrc
-vim.cmd('source ~/.vimrc')
+vim.cmd("source ~/.vimrc")
+
+-- load lazy.nvim
+require("config.lazy")
 
 -- copied from https://github.com/Wansmer/nvim-config/blob/977a97c/lua/modules/key_listener.lua
 local listener_ls = vim.api.nvim_create_namespace("key_listener")
