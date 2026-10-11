@@ -100,12 +100,20 @@ alias dl='ls -la'
 alias l='ls'
 alias ll='ls -l'
 alias la='ls -la'
-alias vim='vim -p'
-alias view='view -p'
 # I've made mistakes too many times...
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
+
+# Prefer neovim, if available
+if [[ -x =nvim ]]; then
+    alias vim='nvim'
+    alias view='nvim -Rp'
+    alias nvim='nvim -p'
+else
+    alias vim='vim -p'
+    alias view='view -p'
+fi
 
 # Enable progress on dd if supported
 dd_bin="dd"
