@@ -110,6 +110,7 @@ if [[ -x =nvim ]]; then
     alias vim='nvim'
     alias view='nvim -Rp'
     alias nvim='nvim -p'
+    export GIT_EDITOR="nvim"
 else
     alias vim='vim -p'
     alias view='view -p'

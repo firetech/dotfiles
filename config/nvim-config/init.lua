@@ -1,5 +1,9 @@
--- load .vimrc
-vim.cmd("source ~/.vimrc")
+-- load .vimrc and vim plugins
+vim.cmd.source(vim.fn.expand('~/.vimrc'))
+vim.cmd.packloadall()
+
+-- fix Yaifa loading too late for BufReadPost to trigger on initial file
+vim.cmd.Yaifa()
 
 -- load lazy.nvim
 require("config.lazy")

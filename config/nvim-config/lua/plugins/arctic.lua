@@ -22,6 +22,7 @@ return {
       else
         vim.cmd.colorscheme("habamax")
       end
+      vim.cmd.RainbowToggleOn() -- colorscheme changes reset Rainbow
     end
 
     if vim.v.vim_did_enter == 1 then
