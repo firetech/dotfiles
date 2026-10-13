@@ -9,18 +9,17 @@ return {
     local function apply_colorscheme()
       if vim.o.termguicolors then
         vim.cmd.colorscheme("arctic")
-
-        for _, group in ipairs({
-          "Normal",
-          "NormalNC",
-          "NormalFloat",
-          "SignColumn",
-          "EndOfBuffer",
-        }) do
-          vim.api.nvim_set_hl(0, group, { bg = "#000000" })
-        end
       else
         vim.cmd.colorscheme("habamax")
+      end
+      for _, group in ipairs({
+        "Normal",
+        "NormalNC",
+        "NormalFloat",
+        "SignColumn",
+        "EndOfBuffer",
+      }) do
+        vim.api.nvim_set_hl(0, group, { bg = "#000000" })
       end
       vim.cmd.RainbowToggleOn() -- colorscheme changes reset Rainbow
     end
