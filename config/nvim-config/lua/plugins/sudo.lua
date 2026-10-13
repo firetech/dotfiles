@@ -1,11 +1,11 @@
 return {
-    "firetech/sudo.nvim",
-    cmd = { "SudoRead", "SudoWrite", "SudoEdit" },
-    dependencies = {
-        "MunifTanjim/nui.nvim",
-    },
-    opts = {
-        -- optional configuration
-        -- commands = true,
-    },
+  "firetech/sudo.nvim",
+  cmd = { "SudoRead", "SudoWrite", "SudoEdit" },
+  dependencies = {
+    "MunifTanjim/nui.nvim",
+  },
+  opts = {
+    -- optional configuration
+    -- commands = true,
+  },
 }
