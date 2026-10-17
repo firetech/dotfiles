@@ -1,5 +1,6 @@
 return {
   "rockyzhang24/arctic.nvim",
+  cond = not vim.g.vscode, -- Not needed in VS Code context
   branch = "v2",
   name = "arctic",
   dependencies = { "rktjmp/lush.nvim" },
