@@ -34,3 +34,18 @@ end
 
 vim.on_key(key_listener, listener_ls)
 ---------8<---------8<---------8<---------8<---------8<---------
+
+-- add g<Tab> keybinding for VS Code
+-- (the implementation in .vimrc doesn't work in VS Code)
+if vim.g.vscode then
+  vim.keymap.set("n", "g<Tab>", function()
+    require("vscode").call("runCommands", {
+      args = {
+        commands = {
+          "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+          "workbench.action.acceptSelectedQuickOpenItem",
+        }
+      }
+    })
+  end, { desc = "Previous recently used editor" })
+end
