@@ -4,51 +4,14 @@
 
 require 'pp'
 require 'irb/completion'
-require 'irb/ext/save-history'
 require 'rubygems'
+
+begin
+  require 'irb/ext/save-history'
+rescue LoadError
+  # Ignore, seemingly not needed in newer Ruby versions
+end
 
 IRB.conf[:PROMPT_MODE] = :SIMPLE
 IRB.conf[:SAVE_HISTORY] = 500
 IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
-
-begin
-  require 'wirb'
-  # Colorize to match vim syntax colors better.
-  Wirb.schema = Wirb.schema.merge({
-      # delimiter colors
-      :comma              => [ :blue, :bright ],
-      :refers             => [ :blue, :bright ],
-
-      # container colors (hash and array)
-      :open_hash          => [ :green, :bright ],
-      :close_hash         => [ :green, :bright ],
-      :open_array         => [ :green, :bright ],
-      :close_array        => [ :green, :bright ],
-
-      # object colors
-      :open_object        => [ :red, :bright ],
-      :object_class       => [ :white ],
-      :object_addr_prefix => [ :blue, :bright ],
-      :object_line_prefix => [ :blue, :bright ],
-      :close_object       => [ :red, :bright ],
-
-      # symbol colors
-      :symbol             => [ :yellow, :bright ],
-      :symbol_prefix      => [ :yellow, :bright ],
-
-      # string colors
-      :open_string        => [ :red, :bright ],
-      :string             => [ :magenta, :bright ],
-      :close_string       => [ :red, :bright ],
-
-      # misc colors
-      :number             => [ :magenta, :bright ],
-      :keyword            => [ :magenta, :bright ],
-      :class              => [ :green, :bright ],
-      :range              => [ :red, :bright ],
-      :unknown            => [ :white ]
-  })
-  Wirb.start
-rescue LoadError
-  # Ignore
-end
