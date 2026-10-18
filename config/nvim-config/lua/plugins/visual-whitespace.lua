@@ -3,6 +3,8 @@ return {
   cond = not vim.g.vscode,
   event = "ModeChanged *:[vV\22]", -- optionally, lazy load on entering visual mode
   opts = {
-    -- your opts here ...
+    list_chars = {
+      tab = "→"
+    }
   }
 }

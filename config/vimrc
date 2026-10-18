@@ -36,7 +36,7 @@ if has('gui_running')
 endif
 
 " Nice listchars (used with :set list)
-set listchars=tab:·\ ,eol:¬,trail:×
+set listchars=tab:→\ ,nbsp:␣,space:·,eol:↲
 
 " ------ Add command to fix trailing whitespace ------
 function! <SID>StripTrailingWhitespace()
