@@ -9,6 +9,7 @@ vim.cmd.Yaifa()
 require("config.lazy")
 
 -- copied from https://github.com/Wansmer/nvim-config/blob/977a97c/lua/modules/key_listener.lua
+---------8<---------8<---------8<---------8<---------8<---------
 local listener_ls = vim.api.nvim_create_namespace("key_listener")
 
 ---Deleting hlsearch when it already no needed
@@ -32,3 +33,4 @@ local function key_listener(char)
 end
 
 vim.on_key(key_listener, listener_ls)
+---------8<---------8<---------8<---------8<---------8<---------
