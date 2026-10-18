@@ -246,6 +246,7 @@ if [[ -x =apt ]]; then
     alias di='sudo dpkg -i'
     alias drc='sudo dpkg-reconfigure'
     alias dlf='dpkg -L'
+    alias dsf='dpkg -S'
 fi
 if [[ -f /var/log/syslog ]]; then
     sudo='sudo '
